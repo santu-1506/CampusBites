@@ -1,9 +1,14 @@
-const app = require("./app");
 const dotenv = require("dotenv");
-const {connectDB} = require("./config/database");
+const path = require("path");
 
-dotenv.config({path: "./config/config.env"});
+// Load environment variables before anything else
+dotenv.config({ path: path.join(__dirname, "config/config.env") });
+
+const app = require("./app");
+const { connectDB } = require("./config/database");
+
 connectDB();
-app.listen(process.env.port, ()=>{
-    console.log(`Server is up on port: ${process.env.port}`);
-})
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server is up on port: ${process.env.PORT}`);
+});

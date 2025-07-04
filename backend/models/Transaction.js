@@ -7,7 +7,7 @@ const TransactionSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   mode: { type: String, enum: ["cod", "online"], default: "cod" },
   status: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
-  createdAt: { type: Date, default: Date.now },
-});
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Transaction", TransactionSchema);

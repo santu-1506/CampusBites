@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "canteen"], required: true },
   campus: { type: mongoose.Schema.Types.ObjectId, ref: "Campus", required: true },
-  canteenId: { type: mongoose.Schema.Types.ObjectId, ref: "Canteen" },
-});
+  canteen: { type: mongoose.Schema.Types.ObjectId, ref: "Canteen" },
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -11,17 +11,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Users, GraduationCap, Shield } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Users, GraduationCap } from "lucide-react"
 import Image from "next/image"
 import { useAuth } from "@/context/auth-context"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  role: z.enum(["student", "campus", "admin"], { message: "Please select your role" }),
+  role: z.enum(["student", "campus"], { message: "Please select your role" }),
 })
 
-type UserRole = "student" | "campus" | "admin"
+type UserRole = "student" | "campus"
 
 export default function LoginPage() {
   const { toast } = useToast()
@@ -73,9 +73,6 @@ export default function LoginPage() {
         case "campus":
           router.push("/campus/dashboard")
           break
-        case "admin":
-          router.push("/admin/dashboard")
-          break
       }
     } catch (error) {
       toast({
@@ -94,8 +91,6 @@ export default function LoginPage() {
         return <GraduationCap className="w-5 h-5" />
       case "campus":
         return <Users className="w-5 h-5" />
-      case "admin":
-        return <Shield className="w-5 h-5" />
     }
   }
 
@@ -105,8 +100,6 @@ export default function LoginPage() {
         return "from-blue-500 to-purple-600"
       case "campus":
         return "from-green-500 to-emerald-600"
-      case "admin":
-        return "from-red-500 to-pink-600"
     }
   }
 
@@ -185,16 +178,6 @@ export default function LoginPage() {
                   <p className="text-gray-400">Manage your restaurant & orders</p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-6 text-left group hover:scale-105 transition-transform duration-300">
-                <div className="w-16 h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-red-500/25">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg">Administrators</h3>
-                  <p className="text-gray-400">Control & monitor the platform</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -248,15 +231,9 @@ export default function LoginPage() {
                                   <span>Campus Partner</span>
                                 </div>
                               </SelectItem>
-                              <SelectItem value="admin" className="text-white hover:bg-gray-700 cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                  <Shield className="w-5 h-5 text-red-400" />
-                                  <span>Administrator</span>
-                                </div>
-                              </SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage className="text-red-400" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />

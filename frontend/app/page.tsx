@@ -1,245 +1,426 @@
+"use client"
+
+import { useEffect, useRef, FC } from "react"
 import Link from "next/link"
+import { motion, useInView, animate, Variants, useMotionValue, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Star, Zap, Truck, Heart, GraduationCap, Search } from "lucide-react"
+import { Star, Zap, Truck, Heart, GraduationCap, Search, ArrowRight } from "lucide-react"
+
+interface CounterProps {
+  to: number
+  isPlus?: boolean
+  suffix?: string
+}
+
+const Counter: FC<CounterProps> = ({ to, isPlus = false, suffix = "" }) => {
+  const nodeRef = useRef<HTMLSpanElement>(null)
+  const inViewRef = useRef<HTMLSpanElement>(null)
+  const isInView = useInView(inViewRef, { once: true, margin: "-100px" })
+
+  useEffect(() => {
+    if (isInView && nodeRef.current) {
+      const node = nodeRef.current
+      const controls = animate(0, to, {
+        duration: 2,
+        ease: "easeOut",
+        onUpdate(value) {
+          if (node) {
+            node.textContent = String(Math.round(value))
+          }
+        },
+      })
+      return () => controls.stop()
+    }
+  }, [isInView, to])
+
+  return (
+    <span ref={inViewRef}>
+      <span ref={nodeRef}>0</span>
+      {isPlus && "+"}
+      {suffix}
+    </span>
+  )
+}
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut",
+      staggerChildren: 0.2,
+    },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+}
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-gray-900 text-white overflow-hidden">
-      {/* Cinematic Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0">
-          {/* Floating Food Icons */}
-          <div className="absolute top-20 left-20 w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center animate-float">
-            <span className="text-2xl">🍕</span>
-          </div>
-          <div className="absolute top-40 right-32 w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center animate-float-delayed">
-            <span className="text-xl">🍔</span>
-          </div>
-          <div className="absolute bottom-32 left-16 w-14 h-14 bg-yellow-500/20 rounded-full flex items-center justify-center animate-bounce-slow">
-            <span className="text-xl">🌮</span>
-          </div>
-          <div className="absolute bottom-20 right-20 w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center animate-pulse">
-            <span className="text-lg">🥗</span>
-          </div>
-          <div className="absolute top-1/2 left-10 w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center animate-ping">
-            <span className="text-sm">☕</span>
-          </div>
+  const heroRef = useRef<HTMLDivElement>(null)
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-          {/* Gradient Orbs */}
-          <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
+  const rotateX = useTransform(mouseY, [-300, 300], [15, -15])
+  const rotateY = useTransform(mouseX, [-300, 300], [-15, 15])
+
+  const handleMouseMove = (event: React.MouseEvent) => {
+    if (heroRef.current) {
+      const rect = heroRef.current.getBoundingClientRect()
+      mouseX.set(event.clientX - rect.left - rect.width / 2)
+      mouseY.set(event.clientY - rect.top - rect.height / 2)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Professional Hero Section */}
+      <motion.section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        initial="hidden"
+        animate="visible"
+        variants={sectionVariants}
+        ref={heroRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ perspective: "1000px" }}
+      >
+        {/* Subtle Animated Background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900/80 to-black"></div>
+          <motion.div
+            className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          ></motion.div>
+          <motion.div
+            className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.2, 1], rotate: [0, -90, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+          ></motion.div>
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          ></motion.div>
+          {/* Shooting Stars */}
+          <motion.div
+            className="absolute top-1/4 left-0 w-48 h-1 bg-white/40 rounded-full"
+            style={{ filter: "blur(2px)" }}
+            initial={{ x: "-100vw", opacity: 0 }}
+            animate={{ x: "100vw", opacity: [0, 1, 0] }}
+            transition={{ duration: 4, repeat: Infinity, delay: 5, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute top-1/2 right-0 w-32 h-0.5 bg-white/30 rounded-full"
+            style={{ filter: "blur(1px)" }}
+            initial={{ x: "100vw", opacity: 0 }}
+            animate={{ x: "-100vw", opacity: [0, 1, 0] }}
+            transition={{ duration: 3, repeat: Infinity, delay: 7, ease: "linear" }}
+          />
+          {/* Floating Food Icons */}
+          <motion.div
+            className="absolute top-1/4 left-1/4 text-6xl"
+            style={{ textShadow: "0 0 15px rgba(255, 165, 0, 0.5)" }}
+            animate={{ y: [0, -20, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            🍔
+          </motion.div>
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 text-5xl"
+            style={{ textShadow: "0 0 15px rgba(255, 215, 0, 0.5)" }}
+            animate={{ y: [0, 20, 0], rotate: [0, 15, -15, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          >
+            🍕
+          </motion.div>
         </div>
 
         <div className="container mx-auto px-4 py-20 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="lg:w-1/2 mb-12 lg:mb-0">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-2 mb-8 animate-fade-in">
-                <Star className="w-4 h-4 text-orange-400" />
-                <span className="text-orange-300 text-sm font-medium">Rated #1 Campus Food Delivery</span>
-              </div>
+            <div className="text-center lg:text-left">
+              <motion.div 
+                className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-2 mb-6"
+                variants={itemVariants}
+              >
+                <Star className="w-5 h-5 text-red-400" />
+                <span className="text-red-300 font-medium">#1 Campus Food Delivery</span>
+              </motion.div>
 
-              {/* Main Headline */}
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight animate-slide-up">
+              <motion.h1 
+                className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
+                variants={itemVariants}
+              >
                 <span className="block text-white">Late Night</span>
-                <span className="block bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent">
                   Cravings?
                 </span>
-              </h1>
+              </motion.h1>
 
-              <p className="text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed animate-slide-up delay-200">
-                We deliver <span className="text-orange-400 font-semibold">24/7</span> to your hostel room
-              </p>
+              <motion.p 
+                className="text-lg md:text-xl text-gray-400 mb-10 max-w-xl mx-auto lg:mx-0"
+                variants={itemVariants}
+              >
+                Don't let hunger slow you down. Get your favorite meals delivered fast,
+                <span className="text-red-400 font-semibold"> 24/7</span>, right to your hostel room.
+              </motion.p>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-slide-up delay-300">
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-4 text-lg rounded-full shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105"
-                >
-                  <Link href="/menu">
-                    Order Now
-                    <span className="ml-2">→</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-gray-600 text-white hover:bg-gray-800 backdrop-blur-sm font-semibold px-8 py-4 text-lg rounded-full transition-all duration-300 hover:scale-105 bg-transparent"
-                >
-                  <Link href="#demo">
-                    <span className="mr-2">▶</span>
-                    Watch Demo
-                  </Link>
-                </Button>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in delay-500">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">100+</div>
-                  <div className="text-sm text-gray-400">Restaurants</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">1000+</div>
-                  <div className="text-sm text-gray-400">Happy Students</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">15min</div>
-                  <div className="text-sm text-gray-400">Avg Delivery</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">24/7</div>
-                  <div className="text-sm text-gray-400">Service</div>
-                </div>
-              </div>
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
+                variants={itemVariants}
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-lg shadow-red-500/20 transition-all duration-300"
+                  >
+                    <Link href="/menu">
+                      Order Now <ArrowRight className="w-5 h-5 ml-2" />
+                    </Link>
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-red-700 text-red-700 hover:bg-gray-800 hover:text-white backdrop-blur-sm font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300"
+                  >
+                    <Link href="#demo">
+                      <span className="mr-2 play-icon">▶</span>
+                      Watch Demo
+                    </Link>
+                  </Button>
+                </motion.div>
+              </motion.div>
             </div>
 
-            {/* Right Content - Floating Food Illustration */}
-            <div className="lg:w-1/2 relative">
-              <div className="relative w-full max-w-lg mx-auto">
-                {/* Main Food Illustration */}
-                <div className="relative">
-                  <div className="w-80 h-80 mx-auto relative animate-float">
-                    {/* Layered Food Illustration */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-green-600/20 rounded-full transform rotate-12 animate-spin-slow"></div>
-                    <div className="absolute inset-4 bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-full transform -rotate-6 animate-spin-reverse"></div>
-                    <div className="absolute inset-8 bg-gradient-to-br from-orange-400/40 to-red-500/40 rounded-full transform rotate-3 animate-pulse"></div>
-                    <div className="absolute inset-12 bg-gradient-to-br from-red-400/50 to-pink-500/50 rounded-full animate-bounce-slow"></div>
+            {/* Right Content - Cool Animation */}
+            <motion.div
+              className="relative hidden lg:flex items-center justify-center"
+              style={{ rotateX, rotateY }}
+            >
+              <div className="relative w-96 h-96" style={{ transformStyle: "preserve-3d" }}>
+                {/* Planet Earth */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 w-40 h-40 bg-gradient-to-br from-blue-600 to-cyan-400 rounded-full shadow-2xl shadow-blue-500/30"
+                  style={{ x: "-50%", y: "-50%", transform: "translateZ(50px)" }}
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <div className="absolute inset-0 rounded-full opacity-20 bg-black" />
+                  <motion.span
+                    className="absolute top-1/2 left-1/2 text-5xl"
+                    style={{ x: "-50%", y: "-50%" }}
+                  >
+                    🌍
+                  </motion.span>
+                </motion.div>
 
-                    {/* Center Food Icon */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-8xl animate-bounce-gentle">🌮</div>
+                {/* Orbiting Car */}
+                <motion.div
+                  className="absolute w-full h-full"
+                  style={{ transform: "translateZ(20px)" }}
+                  animate={{ rotate: 360 }}
+                  transition={{ ease: "linear", duration: 12, repeat: Infinity }}
+                >
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 w-24 h-24"
+                    style={{ x: "-50%", y: "-50%" }}
+                    animate={{
+                      rotate: -360,
+                      x: "14rem",
+                      y: ["0rem", "1.5rem", "0rem", "-1.5rem", "0rem"],
+                    }}
+                    transition={{
+                      rotate: { ease: "linear", duration: 12, repeat: Infinity },
+                      y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                    }}
+                  >
+                    <div className="flex items-center justify-center h-full drop-shadow-lg">
+                      <span className="text-5xl">🏎️</span>
+                      <span className="text-xl font-bold text-white ml-2 -mt-4">Cb</span>
                     </div>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
 
-                {/* Floating Elements Around Food */}
-                <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center animate-float shadow-lg">
-                  <span className="text-2xl">🍟</span>
-                </div>
-                <div className="absolute -bottom-8 -right-8 w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center animate-float-delayed shadow-lg">
-                  <span className="text-2xl">🥤</span>
-                </div>
-                <div className="absolute top-1/2 -right-12 w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center animate-bounce shadow-lg">
-                  <span className="text-xl">🍰</span>
-                </div>
+                {/* Background Rings */}
+                <motion.div
+                  className="absolute inset-0 border-2 border-red-500/20 rounded-full"
+                  style={{ transform: "translateZ(0px)" }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                ></motion.div>
+                <motion.div
+                  className="absolute inset-8 border-2 border-red-500/30 rounded-full"
+                  style={{ transform: "translateZ(-20px)" }}
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                ></motion.div>
               </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Stats Section */}
+        <motion.div 
+          className="absolute bottom-10 left-0 right-0 z-10"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+        >
+          <div className="container mx-auto px-4">
+            <div className="bg-gray-900/50 backdrop-blur-md border border-gray-700/50 rounded-full p-4 flex items-center justify-around max-w-2xl mx-auto">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white"><Counter to={100} isPlus /></div>
+                  <div className="text-xs text-gray-400">Restaurants</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white"><Counter to={1000} isPlus /></div>
+                  <div className="text-xs text-gray-400">Happy Students</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white"><Counter to={15} suffix="min" /></div>
+                  <div className="text-xs text-gray-400">Avg Delivery</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">24/7</div>
+                  <div className="text-xs text-gray-400">Service</div>
+                </div>
             </div>
           </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-orange-400 rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* Why Choose Section */}
-      <section className="py-20 relative">
+      <motion.section 
+        className="py-24 bg-black"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={sectionVariants}
+      >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <motion.div className="text-center mb-16" variants={itemVariants}>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               Why Choose{" "}
-              <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent">
                 Campus Bites?
               </span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              We're not just another food delivery app. We're your campus food companion.
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              We're dedicated to providing the ultimate campus food experience—fast, reliable, and tailored for students.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 icon: <Zap className="w-8 h-8" />,
                 title: "Lightning Fast",
-                description: "Average delivery time of just 15 minutes",
-                color: "from-yellow-400 to-orange-500",
+                description: "Get your food in minutes, not hours.",
+                color: "text-red-400",
               },
               {
                 icon: <Truck className="w-8 h-8" />,
-                title: "Hassle Delivery",
-                description: "Direct delivery to your room or pickup points",
-                color: "from-blue-400 to-purple-500",
+                title: "Direct Delivery",
+                description: "Delivered straight to your hostel, no hassle.",
+                color: "text-blue-400",
               },
               {
                 icon: <Heart className="w-8 h-8" />,
-                title: "Quality Food",
-                description: "Fresh, hygienic meals from verified restaurants",
-                color: "from-pink-400 to-red-500",
+                title: "Quality Guaranteed",
+                description: "Fresh, hygienic meals from trusted kitchens.",
+                color: "text-pink-400",
               },
               {
                 icon: <GraduationCap className="w-8 h-8" />,
-                title: "Student Friendly",
-                description: "Special discounts and affordable pricing",
-                color: "from-green-400 to-emerald-500",
+                title: "Student-Friendly",
+                description: "Exclusive deals and affordable prices for you.",
+                color: "text-green-400",
               },
             ].map((feature, index) => (
-              <div key={index} className="group">
-                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:bg-gray-800/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                  <div
-                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-                  >
+              <motion.div 
+                key={index} 
+                className="group bg-gray-900/50 border border-gray-800 rounded-2xl p-6 transition-all duration-300 hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/10"
+                variants={itemVariants}
+                whileHover={{ y: -8, scale: 1.03, boxShadow: "0px 10px 30px rgba(239, 68, 68, 0.1)" }}
+              >
+                  <div className={`mb-4 ${feature.color}`}>
                     {feature.icon}
                   </div>
                   <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
-                </div>
-              </div>
+                  <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Search Section */}
-      <section className="py-20 relative">
+      <motion.section 
+        className="py-24 bg-gradient-to-b from-black to-gray-900"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={sectionVariants}
+      >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <motion.div className="text-center mb-12" variants={itemVariants}>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
               What are you{" "}
-              <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">craving</span>{" "}
-              today?
+              <span className="bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent">craving</span>?
             </h2>
-          </div>
+          </motion.div>
 
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-12">
+          <motion.div className="max-w-2xl mx-auto mb-8" variants={itemVariants}>
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6" />
               <Input
                 type="text"
                 placeholder="Search for restaurants, cuisines, or dishes..."
-                className="w-full pl-12 pr-20 py-4 bg-gray-800/50 border-gray-700 rounded-full text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-16 pr-24 py-7 bg-gray-900/70 border-2 border-gray-700 rounded-full text-white placeholder-gray-500 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
               />
-              <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full px-6">
+              <Button className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-red-600 hover:bg-red-700 rounded-full px-6 py-2.5 font-semibold">
                 Search
               </Button>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Category Pills */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <motion.div 
+            className="flex flex-wrap justify-center gap-3"
+            variants={sectionVariants}
+          >
             {["Pizza", "Burger", "Chinese", "South Indian", "Desserts", "Beverages"].map((category, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white rounded-full px-6 py-2 transition-all duration-300 hover:scale-105 bg-transparent"
-              >
-                {category}
-              </Button>
+              <motion.div key={index} variants={itemVariants} whileHover={{ y: -4, scale: 1.05 }}>
+                <Button
+                  variant="outline"
+                  className="border-gray-700 bg-gray-900/50 text-gray-300 hover:bg-gray-800 hover:border-red-500/50 hover:text-white rounded-full px-5 py-2 transition-all duration-300"
+                >
+                  {category}
+                </Button>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
     </div>
   )
 }

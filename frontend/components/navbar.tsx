@@ -30,17 +30,10 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
+      setIsScrolled(window.scrollY > 10)
     }
-
     window.addEventListener("scroll", handleScroll)
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   const navItems = [
@@ -51,57 +44,34 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-500 ${
-        isScrolled
-          ? "bg-gray-900/95 backdrop-blur-xl shadow-2xl border-b border-gray-700/50"
-          : "bg-gray-900/80 backdrop-blur-md border-b border-gray-800/30"
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        isScrolled ? "bg-black/80 backdrop-blur-lg border-b border-gray-800" : "bg-transparent"
       }`}
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-red-500/5 animate-pulse"></div>
-
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between relative z-10">
-        <div className="flex items-center">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           {isMobile && (
             <Sheet>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mr-2 text-white hover:bg-gray-800/50 hover:scale-110 transition-all duration-300 rounded-xl"
-                >
+                <Button variant="ghost" size="icon" className="mr-2 text-white hover:bg-gray-800 rounded-lg">
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-gray-900/95 backdrop-blur-xl border-gray-700">
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center mb-8 mt-4">
-                    <div className="relative">
-                      <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full p-1 mr-3 animate-pulse">
-                        <Image
-                          src="/placeholder.svg?height=32&width=32"
-                          alt="Campus Bites Logo"
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                      </div>
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
-                    </div>
-                    <span className="font-bold text-lg bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                      Campus Bites
-                    </span>
-                  </div>
+              <SheetContent side="left" className="bg-black/90 backdrop-blur-lg border-gray-800 text-white">
+                <div className="flex flex-col h-full p-4">
+                  <Link href="/" className="flex items-center gap-3 mb-8">
+                    <Image src="/placeholder-logo.svg" alt="Campus Bites Logo" width={32} height={32} />
+                    <span className="font-bold text-xl text-white">Campus Bites</span>
+                  </Link>
                   <nav className="flex flex-col gap-2">
                     {navItems.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-base font-medium transition-colors ${
                           pathname === item.href
-                            ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 text-white border border-orange-500/30"
-                            : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                            ? "bg-red-600/20 text-red-300"
+                            : "text-gray-400 hover:bg-gray-800 hover:text-white"
                         }`}
                       >
                         <item.icon className="h-5 w-5" />
@@ -114,161 +84,95 @@ export default function Navbar() {
             </Sheet>
           )}
 
-          <Link href="/" className="flex items-center group">
-            <div className="relative">
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full p-1 mr-3 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-orange-500/25">
-                <Image
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="Campus Bites Logo"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-              </div>
-              {/* Online indicator */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
-            </div>
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/placeholder-logo.svg" alt="Campus Bites Logo" width={40} height={40} />
             <div className="hidden sm:block">
-              <span className="font-bold text-xl bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent group-hover:from-orange-300 group-hover:to-red-400 transition-all duration-300">
-                Campus Bites
-              </span>
-              <div className="text-xs text-gray-400 -mt-1">Fast • Fresh • Delicious</div>
+              <span className="font-bold text-xl text-white">Campus Bites</span>
+              <p className="text-xs text-gray-500">Fast • Fresh • Delicious</p>
             </div>
           </Link>
-
-          {!isMobile && (
-            <nav className="ml-8 flex items-center gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`relative flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300 rounded-xl hover:scale-105 group ${
-                    pathname === item.href
-                      ? "text-white bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-800/30"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
-                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-red-500 group-hover:w-full group-hover:left-0 transition-all duration-300 rounded-full"></div>
-                </Link>
-              ))}
-            </nav>
-          )}
         </div>
 
+        {!isMobile && (
+          <nav className="flex items-center bg-gray-900/50 border border-gray-800 rounded-full px-2 py-1.5">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+                  pathname === item.href
+                    ? "text-white bg-red-600"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        )}
+
         <div className="flex items-center gap-3">
-          {/* Cart */}
-          <Button
-            asChild
-            variant="ghost"
-            size="icon"
-            className="relative text-white hover:bg-gray-800/50 hover:scale-110 transition-all duration-300 rounded-xl group"
-          >
+          <Button asChild variant="ghost" size="icon" className="relative text-gray-400 hover:text-white hover:bg-gray-800 rounded-full">
             <Link href="/cart">
-              <ShoppingCart className="h-5 w-5 group-hover:animate-bounce" />
+              <ShoppingCart className="h-5 w-5" />
               {cartItemsCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-gradient-to-r from-orange-500 to-red-500 border-0 text-xs font-bold animate-pulse shadow-lg">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-600 text-white text-xs font-bold border-2 border-black">
                   {cartItemsCount}
                 </Badge>
               )}
-              <span className="sr-only">Cart</span>
             </Link>
           </Button>
 
-          {!isMobile && (
-            <>
-              {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative rounded-full text-white hover:bg-gray-800/50 transition-all duration-300 hover:scale-105 p-2 group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="relative">
-                          <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full p-2">
-                            <User className="h-4 w-4 text-white" />
-                          </div>
-                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
-                        </div>
-                        <div className="hidden lg:block text-left">
-                          <p className="font-medium text-sm text-white group-hover:text-orange-400 transition-colors">
-                            {user?.name}
-                          </p>
-                          <p className="text-xs text-gray-400">Premium Member</p>
-                        </div>
-                        <Sparkles className="h-3 w-3 text-yellow-400 animate-pulse" />
-                      </div>
-                      <span className="sr-only">User menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="bg-gray-800/95 backdrop-blur-xl border-gray-700 shadow-2xl rounded-xl p-2 min-w-[200px]"
-                  >
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/50">
-                      <div className="relative">
-                        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full p-2">
-                          <User className="h-4 w-4 text-white" />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-800"></div>
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm text-white">{user?.name}</p>
-                        <p className="text-xs text-gray-400">{user?.email}</p>
-                      </div>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative p-0 rounded-full h-10 w-10 hover:bg-gray-800">
+                  <Image src="/placeholder-user.jpg" alt={user?.name || 'User'} layout="fill" objectFit="cover" className="rounded-full" />
+                  <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-black" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-gray-900/90 backdrop-blur-lg border-gray-800 text-white w-56 rounded-xl mt-2">
+                <DropdownMenuItem asChild>
+                  <Link href="/profile" className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-800 rounded-t-lg">
+                    <Image src="/placeholder-user.jpg" alt={user?.name || 'User'} width={40} height={40} className="rounded-full" />
+                    <div>
+                      <p className="font-semibold">{user?.name}</p>
+                      <p className="text-xs text-gray-400">View Profile</p>
                     </div>
-                    <DropdownMenuSeparator className="bg-gray-700 my-2" />
-                    <DropdownMenuItem asChild className="text-gray-300 hover:bg-gray-700/50 rounded-lg cursor-pointer">
-                      <Link href="/profile" className="flex items-center gap-2 p-2">
-                        <User className="h-4 w-4" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="text-gray-300 hover:bg-gray-700/50 rounded-lg cursor-pointer">
-                      <Link href="/orders" className="flex items-center gap-2 p-2">
-                        <Package className="h-4 w-4" />
-                        Orders
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-gray-700 my-2" />
-                    <DropdownMenuItem
-                      onClick={logout}
-                      className="text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-lg cursor-pointer p-2"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className="text-sm text-gray-300 hover:text-white hover:bg-gray-800/50 transition-all duration-300 hover:scale-105 rounded-xl px-4"
-                  >
-                    <Link href="/login">Login</Link>
-                  </Button>
-                  <Button
-                    asChild
-                    className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm rounded-xl px-6 py-2 font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-orange-500/25 group"
-                  >
-                    <Link href="/register" className="flex items-center gap-2">
-                      Sign Up
-                      <Sparkles className="h-3 w-3 group-hover:animate-spin" />
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-800" />
+                <DropdownMenuItem asChild className="p-0">
+                  <Link href="/orders" className="flex items-center gap-2 w-full px-3 py-2 cursor-pointer hover:bg-gray-800">
+                    <Package className="h-4 w-4 text-gray-400" />
+                    <span>My Orders</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="p-0">
+                  <Link href="/favorites" className="flex items-center gap-2 w-full px-3 py-2 cursor-pointer hover:bg-gray-800">
+                    <Heart className="h-4 w-4 text-gray-400" />
+                    <span>Favorites</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-800" />
+                <DropdownMenuItem onClick={logout} className="flex items-center gap-2 w-full px-3 py-2 cursor-pointer text-red-400 hover:!text-red-400 hover:!bg-red-600/20 rounded-b-lg">
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="hidden sm:flex items-center gap-2">
+              <Button asChild variant="ghost" className="text-gray-300 hover:bg-gray-800 hover:text-white rounded-full">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full shadow-lg shadow-red-500/20 transition-all transform hover:scale-105">
+                <Link href="/register">Sign Up</Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>
-
-      {/* Bottom glow effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
     </header>
   )
 }

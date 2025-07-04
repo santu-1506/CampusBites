@@ -15,8 +15,7 @@ const OrderSchema = new mongoose.Schema({
     enum: ["placed", "preparing", "ready", "completed", "cancelled"],
     default: "placed",
   },
-  placedAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Order", OrderSchema);

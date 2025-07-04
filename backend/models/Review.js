@@ -6,7 +6,7 @@ const ReviewSchema = new mongoose.Schema({
   order: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
   rating: { type: Number, min: 1, max: 5, required: true },
   comment: { type: String },
-  createdAt: { type: Date, default: Date.now },
-});
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Review", ReviewSchema);

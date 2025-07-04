@@ -1,50 +1,64 @@
 const User = require("../models/User");
-const Canteen = require("../models/Canteen");
-const Campus = require("../models/Campus");
+const jwt = require("jsonwebtoken");
 
-exports.createUser = async (req, res) => {
+exports.registerUser = async (req, res) => {
+  const { name, email, password, role, campus } = req.body;
   try {
-    const { name, email, password, role, campus } = req.body;
-    if (!["student", "canteen"].includes(role)) {
-      return res.status(400).json({ message: "Invalid role. Must be 'student' or 'canteen'." });
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
     }
-    const campusDoc = await Campus.findOne({ name: campus });
-    if (!campusDoc) {
-      return res.status(400).json({ message: "Campus not found. Please enter a valid campus name." });
-    }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email." });
-    }
-    let newCanteen = null;
-    if (role === "canteen") {
-      newCanteen = await Canteen.create({
-        name: `${name}'s Canteen`,
-        campus: campusDoc._id,
-        isOpen: true
-      });
-    }
-    const user = await User.create({
-      name,
-      email,
-      password,
-      role,
-      campus: campusDoc._id,
-      canteenId: newCanteen ? newCanteen._id : undefined
+    // A default campus must be provided for now.
+    // In a real app, you might look up the campus by name or ID.
+    const campusId = "60d5f1f77e8a1d2c6c8b4567"; // Placeholder for a valid ObjectId
+    user = new User({ name, email, password, role, campus: campusId });
+    await user.save();
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
     });
-    if (newCanteen) {
-      newCanteen.owner = user._id;
-      await newCanteen.save();
-    }
-    res.status(201).json({
-      message: "User registered successfully",
-      user
-    });
+
+    res.status(201).json({ token });
   } catch (error) {
-    console.error("Registration Error:", error);
-    res.status(500).json({
-      message: "Server error during registration",
-      error: error.message
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password, role } = req.body;
+  try {
+    const user = await User.findOne({ email, role });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
     });
+
+    res.json({ token });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
   }
 };

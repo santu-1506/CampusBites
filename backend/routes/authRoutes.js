@@ -1,7 +1,14 @@
 const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+const { registerUser, loginUser } = require("../controllers/userController");
 const router = express.Router();
+
+// User Registration
+router.post("/register", registerUser);
+
+// User Login
+router.post("/login", loginUser);
 
 // Redirect to Google for authentication
 router.get(

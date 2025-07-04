@@ -9,20 +9,24 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
-import { useAuth } from "@/context/auth-context"
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Users, GraduationCap, Shield } from "lucide-react"
 import Image from "next/image"
+import { useAuth } from "@/context/auth-context"
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  role: z.enum(["student", "campus", "admin"], { message: "Please select your role" }),
 })
+
+type UserRole = "student" | "campus" | "admin"
 
 export default function LoginPage() {
   const { toast } = useToast()
   const router = useRouter()
-  const { login } = useAuth()
+  const { loginWithToken } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -31,33 +35,91 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      role: undefined,
     },
   })
+
+  const selectedRole = form.watch("role")
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true)
     try {
-      await login(values.email, values.password)
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+
+      const { token } = await response.json();
+      loginWithToken(token);
+
       toast({
         title: "Welcome back! 🎉",
-        description: "Successfully logged into Campus Bites",
+        description: `Successfully logged in as ${values.role}`,
       })
-      router.push("/menu")
+
+      // Role-based routing
+      switch (values.role) {
+        case "student":
+          router.push("/student/dashboard")
+          break
+        case "campus":
+          router.push("/campus/dashboard")
+          break
+        case "admin":
+          router.push("/admin/dashboard")
+          break
+      }
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: "Please check your credentials and try again.",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
       })
     } finally {
       setIsLoading(false)
     }
   }
 
+  const getRoleIcon = (role: UserRole) => {
+    switch (role) {
+      case "student":
+        return <GraduationCap className="w-5 h-5" />
+      case "campus":
+        return <Users className="w-5 h-5" />
+      case "admin":
+        return <Shield className="w-5 h-5" />
+    }
+  }
+
+  const getRoleColor = (role: UserRole) => {
+    switch (role) {
+      case "student":
+        return "from-blue-500 to-purple-600"
+      case "campus":
+        return "from-green-500 to-emerald-600"
+      case "admin":
+        return "from-red-500 to-pink-600"
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center relative overflow-hidden">
-      {/* Animated Background */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center relative overflow-hidden">
+      {/* Cinematic Background */}
       <div className="absolute inset-0">
+        {/* Animated Particles */}
+        <div className="absolute top-20 left-20 w-2 h-2 bg-orange-400 rounded-full animate-ping"></div>
+        <div className="absolute top-40 right-32 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-32 left-16 w-3 h-3 bg-green-400 rounded-full animate-bounce"></div>
+        <div className="absolute bottom-20 right-20 w-2 h-2 bg-purple-400 rounded-full animate-ping delay-1000"></div>
+
         {/* Floating Food Icons */}
         <div className="absolute top-20 left-20 w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center animate-float">
           <span className="text-2xl">🍕</span>
@@ -68,196 +130,263 @@ export default function LoginPage() {
         <div className="absolute bottom-32 left-16 w-14 h-14 bg-yellow-500/10 rounded-full flex items-center justify-center animate-bounce-slow">
           <span className="text-xl">🌮</span>
         </div>
-        <div className="absolute bottom-20 right-20 w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center animate-pulse">
-          <span className="text-lg">🥗</span>
-        </div>
 
-        {/* Gradient Orbs */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-orange-500/5 to-red-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-yellow-500/5 to-orange-500/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        {/* Dynamic Gradient Orbs */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/5 to-red-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-full blur-xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="flex w-full max-w-6xl mx-auto relative z-10">
-        {/* Left Side - Branding */}
+      <div className="flex w-full max-w-7xl mx-auto relative z-10">
+        {/* Left Side - Enhanced Branding */}
         <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative">
           <div className="text-center animate-slide-in-left">
-            {/* Logo */}
-            <div className="mb-8">
-              <div className="w-24 h-24 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-gentle shadow-2xl">
-                <Image
-                  src="/placeholder.svg?height=60&width=60"
-                  alt="Campus Bites Logo"
-                  width={60}
-                  height={60}
-                  className="rounded-full"
-                />
+            {/* Logo with Enhanced Animation */}
+            <div className="mb-12">
+              <div className="relative">
+                <div className="w-32 h-32 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce-gentle shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 rounded-full animate-spin-slow opacity-20"></div>
+                  <Image
+                    src="/placeholder.svg?height=80&width=80"
+                    alt="Campus Bites Logo"
+                    width={80}
+                    height={80}
+                    className="rounded-full relative z-10"
+                  />
+                </div>
+                {/* Orbiting Elements */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-4 w-4 h-4 bg-yellow-400 rounded-full animate-orbit"></div>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-4 w-3 h-3 bg-green-400 rounded-full animate-orbit-reverse"></div>
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 bg-clip-text text-transparent mb-3">
                 Campus Bites
               </h1>
-              <p className="text-gray-400 mt-2">Your favorite food, delivered fast</p>
+              <p className="text-gray-400 text-lg">Your premium campus food experience</p>
             </div>
 
-            {/* Features */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-4 text-left">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-                  <span className="text-xl">⚡</span>
+            {/* Role-Based Features */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-6 text-left group hover:scale-105 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/25">
+                  <GraduationCap className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Lightning Fast Delivery</h3>
-                  <p className="text-gray-400 text-sm">Get your food in 15 minutes or less</p>
+                  <h3 className="text-white font-bold text-lg">Students</h3>
+                  <p className="text-gray-400">Order your favorite meals instantly</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-left">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-xl">🏆</span>
+
+              <div className="flex items-center gap-6 text-left group hover:scale-105 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-green-500/25">
+                  <Users className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Premium Quality</h3>
-                  <p className="text-gray-400 text-sm">Only the best restaurants on campus</p>
+                  <h3 className="text-white font-bold text-lg">Campus Partners</h3>
+                  <p className="text-gray-400">Manage your restaurant & orders</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-left">
-                <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xl">💝</span>
+
+              <div className="flex items-center gap-6 text-left group hover:scale-105 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-red-500/25">
+                  <Shield className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Student Discounts</h3>
-                  <p className="text-gray-400 text-sm">Special prices for students</p>
+                  <h3 className="text-white font-bold text-lg">Administrators</h3>
+                  <p className="text-gray-400">Control & monitor the platform</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Login Form */}
+        {/* Right Side - Enhanced Login Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
-            <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 shadow-2xl animate-slide-in-right">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Welcome Back!</h2>
-                <p className="text-gray-400">
-                  Don't have an account?{" "}
-                  <Link
-                    href="/register"
-                    className="text-orange-400 hover:text-orange-300 font-medium transition-colors"
-                  >
-                    Sign up here
-                  </Link>
-                </p>
-              </div>
+            <div className="bg-gray-800/30 backdrop-blur-2xl border border-gray-700/30 rounded-3xl p-10 shadow-2xl animate-slide-in-right relative overflow-hidden">
+              {/* Animated Background Pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" suppressHydrationWarning>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-300">Email Address</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                            <Input
-                              placeholder="Enter your email"
-                              type="email"
-                              autoComplete="email"
-                              className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-12 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-red-400" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel className="text-gray-300">Password</FormLabel>
-                          <Link href="#" className="text-sm text-orange-400 hover:text-orange-300 transition-colors">
-                            Forgot password?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                            <Input
-                              placeholder="Enter your password"
-                              type={showPassword ? "text" : "password"}
-                              autoComplete="current-password"
-                              className="pl-10 pr-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-12 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                              {...field}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
-                            >
-                              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                            </button>
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-red-400" />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-orange-500/25 group"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Signing in...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        Sign In
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-
-              <div className="mt-8">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-600"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-gray-800 px-4 text-gray-400">Or continue with</span>
-                  </div>
+              <div className="relative z-10">
+                <div className="text-center mb-10">
+                  <h2 className="text-4xl font-bold text-white mb-3">Welcome Back!</h2>
+                  <p className="text-gray-400 text-lg">
+                    New to Campus Bites?{" "}
+                    <Link
+                      href="/register"
+                      className="text-orange-400 hover:text-orange-300 font-semibold transition-colors hover:underline"
+                    >
+                      Join us here
+                    </Link>
+                  </p>
                 </div>
 
-                <div className="mt-6">
-                  <a href="http://localhost:8080/api/auth/google" className="w-full">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    {/* Role Selection */}
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300 text-lg font-semibold">I am a</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <SelectValue placeholder="Select your role" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-gray-800 border-gray-700">
+                              <SelectItem value="student" className="text-white hover:bg-gray-700 cursor-pointer">
+                                <div className="flex items-center gap-3">
+                                  <GraduationCap className="w-5 h-5 text-blue-400" />
+                                  <span>Student</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="campus" className="text-white hover:bg-gray-700 cursor-pointer">
+                                <div className="flex items-center gap-3">
+                                  <Users className="w-5 h-5 text-green-400" />
+                                  <span>Campus Partner</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="admin" className="text-white hover:bg-gray-700 cursor-pointer">
+                                <div className="flex items-center gap-3">
+                                  <Shield className="w-5 h-5 text-red-400" />
+                                  <span>Administrator</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage className="text-red-400" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300 text-lg font-semibold">Email Address</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+                              <Input
+                                placeholder="Enter your email"
+                                type="email"
+                                autoComplete="email"
+                                className="pl-12 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-red-400" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-between">
+                            <FormLabel className="text-gray-300 text-lg font-semibold">Password</FormLabel>
+                            <Link
+                              href="/forgot-password"
+                              className="text-sm text-orange-400 hover:text-orange-300 transition-colors hover:underline"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+                              <Input
+                                placeholder="Enter your password"
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
+                                className="pl-12 pr-12 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                              >
+                                {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-red-400" />
+                        </FormItem>
+                      )}
+                    />
+
                     <Button
-                      variant="outline"
-                      className="w-full bg-gray-700/50 border-gray-600 text-white hover:bg-gray-700 transition-all duration-300 hover:scale-105"
+                      type="submit"
+                      disabled={isLoading}
+                      className={`w-full ${selectedRole ? `bg-gradient-to-r ${getRoleColor(selectedRole)}` : "bg-gradient-to-r from-orange-500 to-red-500"} hover:scale-105 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg text-lg group`}
                     >
-                      <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
-                        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12
-	c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24
-	s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-                        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657
-	C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
-                        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36
-	c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
-                        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.089,5.571l6.19,5.238
-	C43.021,36.697,44,34.0,44,30C44,22.659,43.862,21.35,43.611,20.083z" />
+                      {isLoading ? (
+                        <div className="flex items-center gap-3">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Signing in...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3">
+                          {selectedRole && getRoleIcon(selectedRole)}
+                          Sign In
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+
+                {/* Role-Specific Login Options */}
+                {selectedRole === "student" && (
+                  <>
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-gray-600" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-gray-800/30 backdrop-blur-2xl px-2 text-gray-400">
+                          Or continue with
+                        </span>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full bg-transparent border-gray-600 hover:bg-gray-700/50 text-white rounded-xl h-14 text-lg"
+                      onClick={() => window.location.href = "http://localhost:8080/api/auth/google"}
+                    >
+                      <svg className="w-6 h-6 mr-3" viewBox="0 0 48 48">
+                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 12.04C34.553 7.784 29.577 5 24 5C13.522 5 5 13.522 5 24s8.522 19 19 19s19-8.522 19-19c0-1.332-.136-2.626-.389-3.917z" />
+                        <path fill="#FF3D00" d="M6.306 14.691c-1.321 2.355-2.071 5.12-2.071 8.003s.75 5.648 2.071 8.003l-5.362 4.152C1.528 31.979 0 28.182 0 24s1.528-7.979 4.02-11.832L6.306 14.691z" />
+                        <path fill="#4CAF50" d="M24 44c5.166 0 9.773-1.789 13.04-4.788l-5.362-4.152c-1.921 1.284-4.322 2.04-6.914 2.04c-5.022 0-9.284-3.473-10.825-8.125l-5.378 4.162C8.751 39.528 15.827 44 24 44z" />
+                        <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.16-4.082 5.584l5.362 4.152c3.354-3.109 5.419-7.587 5.419-12.735c0-1.332-.136-2.626-.389-3.917z" />
                       </svg>
                       Sign in with Google
                     </Button>
-                  </a>
+                  </>
+                )}
+
+                {/* Campus Registration CTA */}
+                <div className="mt-8 p-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl">
+                  <div className="text-center">
+                    <h3 className="text-white font-semibold mb-2">Want to partner with us?</h3>
+                    <p className="text-gray-400 text-sm mb-4">Join as a campus restaurant partner</p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="border-green-500/50 text-green-400 hover:bg-green-500/10 hover:text-green-300 transition-all duration-300 bg-transparent"
+                    >
+                      <Link href="/campus/register">Register Your Restaurant</Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

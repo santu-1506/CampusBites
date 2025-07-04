@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { jwtDecode } from "jwt-decode";
 
 type User = {
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     // This needs to be implemented to call the backend and get a token
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
@@ -64,9 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }, 1000)
     })
-  }
+  }, [])
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = useCallback(async (name: string, email: string, password: string) => {
     // This needs to be implemented to call the backend and get a token
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
@@ -87,9 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }, 1000)
     })
-  }
+  }, [])
 
-  const loginWithToken = (token: string) => {
+  const loginWithToken = useCallback((token: string) => {
     try {
       const decoded = jwtDecode<User>(token);
       setUser(decoded);
@@ -98,13 +98,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Failed to decode token:", error);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null)
     setToken(null);
     localStorage.removeItem("token")
-  }
+  }, []);
 
   return (
     <AuthContext.Provider

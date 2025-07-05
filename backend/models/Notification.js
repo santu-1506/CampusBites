@@ -5,7 +5,7 @@ const NotificationSchema = new mongoose.Schema({
   message: { type: String, required: true },
   type: { type: String, enum: ["order", "system"], default: "order" },
   read: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-});
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Notification", NotificationSchema);

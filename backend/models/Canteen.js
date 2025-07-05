@@ -7,6 +7,7 @@ const CanteenSchema = new mongoose.Schema({
   isOpen: { type: Boolean, default: true },
   items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
   images: [{ type: String }],
-});
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Canteen", CanteenSchema);

@@ -6,6 +6,7 @@ import { motion, useInView, animate, Variants, useMotionValue, useTransform } fr
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Star, Zap, Truck, Heart, GraduationCap, Search, ArrowRight } from "lucide-react"
+import FireworksBackground from "@/components/fireworks-bg"
 
 interface CounterProps {
   to: number
@@ -212,27 +213,94 @@ export default function LandingPageClient() {
               </motion.div>
             </div>
 
-            {/* Right Content - Cool Animation */}
+            {/* Right Content - Professional Fireworks with CB Logo */}
             <motion.div
               className="relative hidden lg:flex items-center justify-center"
               style={{ rotateX, rotateY }}
             >
               <div className="relative w-96 h-96" style={{ transformStyle: "preserve-3d" }}>
-                {/* Planet Earth */}
+                {/* Professional Fireworks Background */}
+                <FireworksBackground className="z-0" />
+
+                {/* CB Logo with Enhanced Glowing Effect */}
                 <motion.div
-                  className="absolute top-1/2 left-1/2 w-40 h-40 bg-gradient-to-br from-blue-600 to-cyan-400 rounded-full shadow-2xl shadow-blue-500/30"
-                  style={{ x: "-50%", y: "-50%", transform: "translateZ(50px)" }}
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-1/2 left-1/2 w-44 h-44 bg-gradient-to-br from-red-600 via-rose-600 to-red-700 rounded-full shadow-2xl"
+                  style={{ x: "-50%", y: "-50%", transform: "translateZ(50px)", zIndex: 10 }}
+                  animate={{ 
+                    scale: [1, 1.08, 1],
+                    boxShadow: [
+                      "0 0 30px rgba(239, 68, 68, 0.6), 0 0 60px rgba(239, 68, 68, 0.4)",
+                      "0 0 50px rgba(239, 68, 68, 0.8), 0 0 100px rgba(239, 68, 68, 0.6)",
+                      "0 0 70px rgba(239, 68, 68, 1), 0 0 140px rgba(239, 68, 68, 0.8)",
+                      "0 0 50px rgba(239, 68, 68, 0.8), 0 0 100px rgba(239, 68, 68, 0.6)",
+                      "0 0 30px rgba(239, 68, 68, 0.6), 0 0 60px rgba(239, 68, 68, 0.4)"
+                    ]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <div className="absolute inset-0 rounded-full opacity-20 bg-black" />
-                  <motion.span
-                    className="absolute top-1/2 left-1/2 text-5xl"
-                    style={{ x: "-50%", y: "-50%" }}
+                  <div className="absolute inset-0 rounded-full opacity-30 bg-black" />
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 text-7xl font-black text-white select-none"
+                    style={{ x: "-50%", y: "-50%", zIndex: 20 }}
+                    animate={{ 
+                      textShadow: [
+                        "0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6)",
+                        "0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.8)",
+                        "0 0 40px rgba(255, 255, 255, 0.9), 0 0 80px rgba(255, 255, 255, 0.6)",
+                        "0 0 30px rgba(255, 255, 255, 1), 0 0 60px rgba(255, 255, 255, 0.8)",
+                        "0 0 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6)"
+                      ]
+                    }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    🌍
-                  </motion.span>
+                    CB
+                  </motion.div>
                 </motion.div>
+
+                {/* Enhanced Glowing Rings */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 w-52 h-52 border-2 border-red-400/40 rounded-full"
+                  style={{ x: "-50%", y: "-50%", zIndex: 5 }}
+                  animate={{
+                    scale: [1, 1.15, 1],
+                    opacity: [0.4, 0.8, 0.4],
+                    rotate: [0, 360]
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div
+                  className="absolute top-1/2 left-1/2 w-60 h-60 border border-rose-400/30 rounded-full"
+                  style={{ x: "-50%", y: "-50%", zIndex: 5 }}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.7, 0.3],
+                    rotate: [360, 0]
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+
+                {/* Pulsing Aura Effect */}
+                <motion.div
+                  className="absolute top-1/2 left-1/2 w-72 h-72 bg-red-500/10 rounded-full blur-3xl"
+                  style={{ x: "-50%", y: "-50%", zIndex: 1 }}
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.3, 0.1, 0.3]
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
 
                 {/* Orbiting Car */}
                 <motion.div

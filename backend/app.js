@@ -5,6 +5,7 @@ const session = require("express-session");
 const authRoutes = require("./routes/authRoutes");
 const canteenRoutes = require('./routes/canteenRoutes');
 const menuRoutes = require('./routes/menuRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 require("./config/passport-setup");
 
 const app = express();
@@ -33,5 +34,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use('/api/v1/canteens', canteenRoutes);
 app.use('/api/v1/menu', menuRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 module.exports = app;

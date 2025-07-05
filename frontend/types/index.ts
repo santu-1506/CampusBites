@@ -24,3 +24,26 @@ export interface Item {
   isVeg: boolean;
   canteen: string;
 }
+
+export interface Order {
+  _id: string;
+  student: string;
+  canteen: {
+    _id: string;
+    name: string;
+  };
+  items: Array<{
+    _id: string;
+    item: {
+      _id: string;
+      name: string;
+      price: number;
+      image?: string;
+    };
+    quantity: number;
+  }>;
+  total: number;
+  status: "placed" | "preparing" | "ready" | "completed" | "cancelled";
+  placedAt: string;
+  updatedAt: string;
+}

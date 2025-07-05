@@ -1,150 +1,164 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/context/auth-context"
 import Image from "next/image"
-
-// Mock data for orders
-const mockOrders = [
-  {
-    id: "ORD-1234",
-    date: "2023-07-01T12:30:00",
-    status: "delivered",
-    total: 299,
-    items: [
-      { id: 1, name: "Classic Burger", quantity: 2, price: 249, image: "/placeholder.svg?height=80&width=80" },
-      { id: 3, name: "Chocolate Milkshake", quantity: 1, price: 89, image: "/placeholder.svg?height=80&width=80" },
-    ],
-  },
-  {
-    id: "ORD-5678",
-    date: "2023-06-28T18:45:00",
-    status: "delivered",
-    total: 399,
-    items: [
-      { id: 2, name: "Cheese Pizza", quantity: 1, price: 199, image: "/placeholder.svg?height=80&width=80" },
-      { id: 4, name: "Cheesecake", quantity: 2, price: 129, image: "/placeholder.svg?height=80&width=80" },
-      { id: 5, name: "French Fries", quantity: 2, price: 79, image: "/placeholder.svg?height=80&width=80" },
-    ],
-  },
-  {
-    id: "ORD-9012",
-    date: "2023-07-02T14:15:00",
-    status: "processing",
-    total: 249,
-    items: [{ id: 6, name: "Veggie Burger", quantity: 2, price: 179, image: "/placeholder.svg?height=80&width=80" }],
-  },
-]
+import { Order } from "@/types"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Loader2, Inbox, AlertCircle } from "lucide-react"
 
 export default function OrdersPage() {
   const { isAuthenticated } = useAuth()
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("all")
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchOrders = async () => {
+        try {
+          setLoading(true)
+          setError(null)
+          const res = await fetch("/api/v1/orders")
+          if (!res.ok) {
+            throw new Error("Failed to fetch orders")
+          }
+          const data = await res.json()
+          setOrders(data.data)
+        } catch (err: any) {
+          setError(err.message)
+        } finally {
+          setLoading(false)
+        }
+      }
+      fetchOrders()
+    }
+  }, [isAuthenticated])
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 py-20">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center p-8">
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Please sign in to view your orders</h2>
-            <p className="text-gray-600 mb-8">You need to be logged in to access your order history.</p>
-            <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-medium px-8 py-3 rounded-xl w-full">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800">Please sign in</h2>
+            <p className="text-gray-600 mb-8">You need to be logged in to view your order history.</p>
+            <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-medium px-8 py-3 rounded-xl">
               <Link href="/login">Sign In</Link>
             </Button>
+        </div>
+      </div>
+    )
+  }
+  
+  const filteredOrders = activeTab === "all" ? orders : orders.filter((order) => order.status === activeTab)
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date)
+  }
+
+  const getStatusBadge = (status: string) => {
+    const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold"
+    switch (status) {
+      case "placed":
+        return <span className={`${baseClasses} bg-blue-100 text-blue-800`}>Placed</span>
+      case "preparing":
+        return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Preparing</span>
+      case "ready":
+        return <span className={`${baseClasses} bg-purple-100 text-purple-800`}>Ready for Pickup</span>
+      case "completed":
+        return <span className={`${baseClasses} bg-green-100 text-green-800`}>Completed</span>
+      case "cancelled":
+        return <span className={`${baseClasses} bg-red-100 text-red-800`}>Cancelled</span>
+      default:
+        return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>{status}</span>
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-20">
+                <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+            </div>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="h-12 w-12 animate-spin text-red-600" />
           </div>
         </div>
       </div>
     )
   }
 
-  const filteredOrders = activeTab === "all" ? mockOrders : mockOrders.filter((order) => order.status === activeTab)
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date)
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "processing":
-        return <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Processing</span>
-      case "delivered":
-        return <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Delivered</span>
-      case "cancelled":
-        return <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Cancelled</span>
-      default:
-        return <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{status}</span>
-    }
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-20">
+                <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+            </div>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-8">
+          <Alert variant="destructive" className="max-w-lg mx-auto">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-red-600 text-white mt-20">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 ">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <h1 className="text-2xl font-bold">Order History</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">📍 Pots campus 2, LDH</span>
-            </div>
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-20">
+              <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
           </div>
+          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="pb-2">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-100 rounded-xl p-1">
+              {["all", "placed", "preparing", "ready", "completed"].map((tab) => (
+                <TabsTrigger 
+                  key={tab}
+                  value={tab}
+                  className="capitalize data-[state=active]:bg-red-600 data-[state=active]:text-white rounded-lg font-medium transition-all"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            
+            <div className="container mx-auto px-4 py-8">
+              {["all", "placed", "preparing", "ready", "completed"].map((tab) => (
+                <TabsContent key={tab} value={tab} className="mt-6">
+                  {renderOrdersList(filteredOrders, formatDate, getStatusBadge)}
+                </TabsContent>
+              ))}
+            </div>
+          </Tabs>
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
-        {/* Tabs */}
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white rounded-xl shadow-sm border border-gray-200 p-1">
-            <TabsTrigger 
-              value="all" 
-              className="data-[state=active]:bg-red-600 data-[state=active]:text-white rounded-lg font-medium transition-all"
-            >
-              All Orders
-            </TabsTrigger>
-            <TabsTrigger 
-              value="processing" 
-              className="data-[state=active]:bg-red-600 data-[state=active]:text-white rounded-lg font-medium transition-all"
-            >
-              Processing
-            </TabsTrigger>
-            <TabsTrigger 
-              value="delivered" 
-              className="data-[state=active]:bg-red-600 data-[state=active]:text-white rounded-lg font-medium transition-all"
-            >
-              Delivered
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="mt-6">
-            {renderOrdersList(filteredOrders, formatDate, getStatusBadge)}
-          </TabsContent>
-          <TabsContent value="processing" className="mt-6">
-            {renderOrdersList(filteredOrders, formatDate, getStatusBadge)}
-          </TabsContent>
-          <TabsContent value="delivered" className="mt-6">
-            {renderOrdersList(filteredOrders, formatDate, getStatusBadge)}
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   )
@@ -153,81 +167,75 @@ export default function OrdersPage() {
 function renderOrdersList(orders: any[], formatDate: Function, getStatusBadge: Function) {
   if (orders.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
+      <div className="text-center py-16">
+        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Inbox className="w-12 h-12 text-gray-400" />
         </div>
-        <p className="text-gray-500 text-lg">No orders found</p>
-        <p className="text-gray-400 text-sm mt-2">Your orders will appear here once you place them</p>
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">No orders found</h3>
+        <p className="text-gray-500">Your past orders will appear here.</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {orders.map((order) => (
-        <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Order Header */}
-          <div className="p-4 bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-bold text-gray-800 text-lg">{order.id}</h3>
+        <div key={order._id} className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          <div className="p-5 bg-gray-50 border-b border-gray-200">
+            <div className="flex justify-between items-start flex-wrap gap-4">
+              <div className="flex-1 min-w-[200px]">
+                <div className="flex items-center gap-4 mb-2">
+                  <h3 className="font-bold text-gray-800 text-lg">Order #{order._id.slice(-6)}</h3>
                   {getStatusBadge(order.status)}
                 </div>
-                <p className="text-sm text-gray-600 flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {formatDate(order.date)}
+                <p className="text-sm text-gray-600 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  {formatDate(order.placedAt)}
                 </p>
+                                 <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
+                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                   {order.canteen?.name || 'Unknown Restaurant'}
+                 </p>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-xl text-red-600">₹{order.total}</p>
-                <p className="text-sm text-gray-500">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+              <div className="text-right flex-shrink-0">
+                <p className="font-bold text-2xl text-red-600">₹{order.total.toFixed(2)}</p>
               </div>
             </div>
           </div>
-
-          {/* Order Items */}
-          <div className="p-4">
+          
+          <div className="p-5">
             <div className="space-y-4">
               {order.items.map((item: any) => (
-                <div key={item.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                  <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 border-gray-200 relative">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      fill
-                      className="object-cover object-center"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                    <p className="text-sm text-gray-600">
-                      Qty: {item.quantity} × ₹{item.price}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-800">₹{(item.quantity * item.price)}</p>
-                  </div>
-                </div>
+                                 <div key={item._id} className="flex items-center gap-4">
+                   <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 relative bg-gray-100">
+                     <Image
+                       src={item.item?.image || "/placeholder.svg"}
+                       alt={item.item?.name || 'Unknown Item'}
+                       fill
+                       className="object-cover"
+                     />
+                   </div>
+                   <div className="flex-1">
+                     <h4 className="font-semibold text-gray-800">{item.item?.name || 'Unknown Item'}</h4>
+                     <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                   </div>
+                   <div className="text-right">
+                     <p className="font-semibold text-gray-800">₹{(item.quantity * (item.item?.price || 0)).toFixed(2)}</p>
+                   </div>
+                 </div>
               ))}
             </div>
-
-            {/* Action Buttons */}
-            <div className="mt-6 flex gap-3">
+            
+            <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end gap-3">
               <Button 
                 variant="outline" 
-                asChild 
-                className="flex-1 border-red-200 text-red-600 hover:bg-red-50 rounded-xl font-medium"
+                asChild
+                className="border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-semibold"
               >
-                <Link href={`/orders/${order.id}`}>View Details</Link>
+                <Link href={`/orders/${order._id}`}>View Details</Link>
               </Button>
-              {order.status === "delivered" && (
-                <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium">
+              {order.status === "completed" && (
+                <Button className="bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold">
                   Reorder
                 </Button>
               )}

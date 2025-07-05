@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 import Image from "next/image"
-import { Trash2, Plus, Minus, ArrowLeft, MapPin, Clock, Gift } from "lucide-react"
+import { Trash2, Plus, Minus, ArrowLeft, MapPin, Clock, Gift, Loader2 } from "lucide-react"
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart()
@@ -16,15 +16,16 @@ export default function CartPage() {
   const router = useRouter()
   const [promoCode, setPromoCode] = useState("")
   const [isApplyingPromo, setIsApplyingPromo] = useState(false)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
   const [discount, setDiscount] = useState(0)
 
-  const handleQuantityChange = (id: number, newQuantity: number) => {
+  const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity > 0) {
       updateQuantity(id, newQuantity)
     }
   }
 
-  const handleRemoveItem = (id: number) => {
+  const handleRemoveItem = (id: string) => {
     removeFromCart(id)
     toast({
       title: "Item removed",
@@ -54,13 +55,65 @@ export default function CartPage() {
     }, 1000)
   }
 
-  const handleCheckout = () => {
-    toast({
-      title: "Order placed",
-      description: "Your order has been placed successfully!",
-    })
-    clearCart()
-    router.push("/orders")
+  const handleCheckout = async () => {
+    setIsPlacingOrder(true)
+    try {
+      if (cart.length === 0) {
+        throw new Error('Cart is empty');
+      }
+
+      // Get the first canteen ID from cart items (assuming all items are from same canteen)
+      // First, we need to fetch the item details to get the canteen ID
+      const firstItemId = cart[0].id;
+      const itemResponse = await fetch(`/api/v1/menu/item/${firstItemId}`);
+      let canteenId;
+      
+      if (itemResponse.ok) {
+        const itemData = await itemResponse.json();
+        canteenId = itemData.data.canteen;
+      } else {
+        // Fallback: use the first available canteen
+        const canteensResponse = await fetch('/api/v1/canteens');
+        const canteensData = await canteensResponse.json();
+        if (canteensData.data && canteensData.data.length > 0) {
+          canteenId = canteensData.data[0]._id;
+        } else {
+          throw new Error('No canteens available');
+        }
+      }
+
+      const orderData = {
+        canteen: canteenId,
+        items: cart.map(item => ({ item: item.id, quantity: item.quantity })),
+        total: totalPrice - discount + 25, // Including delivery fee
+      };
+
+      const res = await fetch('/api/v1/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to place order');
+      }
+
+      toast({
+        title: "Order placed!",
+        description: "Your order has been placed successfully.",
+      })
+      clearCart()
+      router.push("/orders")
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Order failed",
+        description: "There was a problem placing your order. Please try again.",
+      })
+    } finally {
+      setIsPlacingOrder(false)
+    }
   }
 
   if (cart.length === 0) {
@@ -119,7 +172,22 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-   
+      <div className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-xl font-semibold">Your Cart</h1>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <MapPin className="h-4 w-4 text-red-500" />
+              <span>Pots campus 2, LDH V</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="container mx-auto px-4 py-6 my-20">
         {/* Delivery Info */}
@@ -254,20 +322,28 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <div className="border-t pt-3 mb-4">
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>To Pay</span>
-                  <span>₹{(totalPrice - discount + 25 + totalPrice * 0.05).toFixed(2)}</span>
+              <div className="border-t border-gray-200 mt-4 pt-4">
+                <div className="flex justify-between font-bold text-lg">
+                  <span className="text-gray-900">To Pay</span>
+                  <span className="text-gray-900">₹{(totalPrice - discount + 25).toFixed(2)}</span>
                 </div>
               </div>
 
               <Button 
-                className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium" 
+                className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-3 text-base rounded-lg"
                 onClick={handleCheckout}
+                disabled={isPlacingOrder}
               >
-                Proceed to Checkout
+                {isPlacingOrder ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Placing Order...
+                  </>
+                ) : (
+                  "Place Order"
+                )}
               </Button>
-              
+
               <div className="mt-3 text-center">
                 <Link href="/menu" className="text-sm text-red-500 hover:text-red-600">
                   Continue Shopping

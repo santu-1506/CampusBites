@@ -7,12 +7,17 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, ShoppingCart, Star, Clock, MapPin, Filter, Heart, Zap } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { Canteen } from "@/types"
+import { useCart } from "@/context/cart-context"
 
 export default function StudentDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [restaurants, setRestaurants] = useState<Canteen[]>([])
+  const { cart } = useCart()
+
+  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0)
 
   useEffect(() => {
     const fetchCanteens = async () => {
@@ -80,10 +85,12 @@ export default function StudentDashboard() {
                 </h1>
                 <p className="text-gray-400 text-lg">What are you craving today?</p>
               </div>
-              <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105">
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Cart (0)
-              </Button>
+              <Link href="/cart">
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105">
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Cart ({cartItemsCount})
+                </Button>
+              </Link>
             </div>
 
             {/* Search Bar */}
@@ -186,12 +193,14 @@ export default function StudentDashboard() {
                           <span>{restaurant.distance}</span>
                         </div>
                       </div>
-                      <Button
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 rounded-xl transition-all duration-300"
-                        disabled={!restaurant.isOpen}
-                      >
-                        {restaurant.isOpen ? "Order Now" : "Closed"}
-                      </Button>
+                      <Link href={`/menu/${restaurant._id}`}>
+                        <Button
+                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 rounded-xl transition-all duration-300"
+                          disabled={!restaurant.isOpen}
+                        >
+                          {restaurant.isOpen ? "Order Now" : "Closed"}
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}
@@ -263,12 +272,14 @@ export default function StudentDashboard() {
                         <span>{restaurant.distance}</span>
                       </div>
                     </div>
-                    <Button
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 rounded-xl transition-all duration-300"
-                      disabled={!restaurant.isOpen}
-                    >
-                      {restaurant.isOpen ? "Order Now" : "Closed"}
-                    </Button>
+                    <Link href={`/menu/${restaurant._id}`}>
+                      <Button
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 rounded-xl transition-all duration-300"
+                        disabled={!restaurant.isOpen}
+                      >
+                        {restaurant.isOpen ? "Order Now" : "Closed"}
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}

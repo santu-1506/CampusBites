@@ -1,76 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, ShoppingCart, Star, Clock, MapPin, Filter, Heart, Zap } from "lucide-react"
 import Image from "next/image"
-
-interface Restaurant {
-  id: string
-  name: string
-  cuisine: string
-  rating: number
-  deliveryTime: string
-  distance: string
-  image: string
-  isOpen: boolean
-  discount?: string
-  featured?: boolean
-}
+import { Canteen } from "@/types"
 
 export default function StudentDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
+  const [restaurants, setRestaurants] = useState<Canteen[]>([])
 
-  const restaurants: Restaurant[] = [
-    {
-      id: "1",
-      name: "Spice Garden",
-      cuisine: "Indian",
-      rating: 4.8,
-      deliveryTime: "15-20 min",
-      distance: "0.5 km",
-      image: "/placeholder.svg?height=200&width=300",
-      isOpen: true,
-      discount: "20% OFF",
-      featured: true,
-    },
-    {
-      id: "2",
-      name: "Pizza Corner",
-      cuisine: "Italian",
-      rating: 4.6,
-      deliveryTime: "20-25 min",
-      distance: "0.8 km",
-      image: "/placeholder.svg?height=200&width=300",
-      isOpen: true,
-      discount: "Buy 1 Get 1",
-    },
-    {
-      id: "3",
-      name: "Healthy Bites",
-      cuisine: "Healthy",
-      rating: 4.7,
-      deliveryTime: "10-15 min",
-      distance: "0.3 km",
-      image: "/placeholder.svg?height=200&width=300",
-      isOpen: true,
-      featured: true,
-    },
-    {
-      id: "4",
-      name: "Burger Junction",
-      cuisine: "American",
-      rating: 4.5,
-      deliveryTime: "18-22 min",
-      distance: "1.2 km",
-      image: "/placeholder.svg?height=200&width=300",
-      isOpen: false,
-    },
-  ]
+  useEffect(() => {
+    const fetchCanteens = async () => {
+      try {
+        const response = await fetch("/api/v1/canteens")
+        if (!response.ok) {
+          throw new Error("Failed to fetch canteens")
+        }
+        const data = await response.json()
+        setRestaurants(data.data)
+      } catch (error) {
+        console.error("Error fetching canteens:", error)
+      }
+    }
+
+    fetchCanteens()
+  }, [])
 
   const categories = [
     { id: "all", name: "All", icon: "🍽️" },
@@ -92,7 +51,7 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-20 left-20 w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center animate-float">
           <span className="text-2xl">🍕</span>
         </div>
@@ -107,7 +66,7 @@ export default function StudentDashboard() {
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-orange-500/5 to-red-500/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
       </div>
 
-      <div className="relative z-10 p-6">
+      <div className="relative p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-12">
@@ -173,7 +132,7 @@ export default function StudentDashboard() {
                 .filter((restaurant) => restaurant.featured)
                 .map((restaurant) => (
                   <Card
-                    key={restaurant.id}
+                    key={restaurant._id}
                     className="bg-gray-800/30 border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:scale-105 group overflow-hidden"
                   >
                     <div className="relative">
@@ -245,7 +204,7 @@ export default function StudentDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredRestaurants.map((restaurant) => (
                 <Card
-                  key={restaurant.id}
+                  key={restaurant._id}
                   className="bg-gray-800/30 border-gray-700/30 backdrop-blur-xl hover:bg-gray-800/50 transition-all duration-300 hover:scale-105 group overflow-hidden"
                 >
                   <div className="relative">

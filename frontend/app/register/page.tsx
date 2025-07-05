@@ -50,7 +50,7 @@ export default function RegisterPage() {
       toast({
         title: "Welcome to Campus Bites! 🎉",
         description: "Your account has been created successfully",
-      })
+      }) 
       router.push("/menu")
     } catch (error) {
       toast({

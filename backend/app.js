@@ -3,6 +3,8 @@ const cors = require("cors");
 const passport = require("passport");
 const session = require("express-session");
 const authRoutes = require("./routes/authRoutes");
+const canteenRoutes = require('./routes/canteenRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 require("./config/passport-setup");
 
 const app = express();
@@ -29,5 +31,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use('/api/v1/canteens', canteenRoutes);
+app.use('/api/v1/menu', menuRoutes);
 
 module.exports = app;

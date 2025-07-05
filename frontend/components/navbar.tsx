@@ -24,17 +24,8 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const { cart } = useCart()
   const isMobile = useMobile()
-  const [isScrolled, setIsScrolled] = useState(false)
 
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   const navItems = [
     { name: "Home", href: "/", icon: Home },
@@ -44,9 +35,7 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-black/80 backdrop-blur-lg border-b border-gray-800" : "bg-transparent"
-      }`}
+      className="fixed top-0 z-50 w-full bg-gradient-to-r from-red-600 to-rose-500 shadow-lg"
     >
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -86,23 +75,20 @@ export default function Navbar() {
 
           <Link href="/" className="flex items-center gap-3">
             <Image src="/placeholder-logo.svg" alt="Campus Bites Logo" width={40} height={40} />
-            <div className="hidden sm:block">
-              <span className="font-bold text-xl text-white">Campus Bites</span>
-              <p className="text-xs text-gray-500">Fast • Fresh • Delicious</p>
-            </div>
+            <span className="hidden sm:block font-bold text-xl text-white">Campus Bites</span>
           </Link>
         </div>
 
         {!isMobile && (
-          <nav className="flex items-center bg-gray-900/50 border border-gray-800 rounded-full px-2 py-1.5">
+          <nav className="flex items-center bg-red-900/20 rounded-full">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
                   pathname === item.href
-                    ? "text-white bg-red-600"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-white/20 text-white"
+                    : "text-red-100 hover:text-white hover:bg-white/10"
                 }`}
               >
                 {item.name}
@@ -112,7 +98,7 @@ export default function Navbar() {
         )}
 
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="icon" className="relative text-gray-400 hover:text-white hover:bg-gray-800 rounded-full">
+          <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20 rounded-full">
             <Link href="/cart">
               <ShoppingCart className="h-5 w-5" />
               {cartItemsCount > 0 && (
@@ -126,7 +112,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative p-0 rounded-full h-10 w-10 hover:bg-gray-800">
+                <Button variant="ghost" className="relative p-0 rounded-full h-10 w-10 hover:bg-white/20">
                   <Image src="/placeholder-user.jpg" alt={user?.name || 'User'} layout="fill" objectFit="cover" className="rounded-full" />
                   <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-400 ring-2 ring-black" />
                 </Button>
@@ -163,10 +149,10 @@ export default function Navbar() {
             </DropdownMenu>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
-              <Button asChild variant="ghost" className="text-gray-300 hover:bg-gray-800 hover:text-white rounded-full">
+              <Button asChild variant="ghost" className="text-white hover:bg-white/20 rounded-full">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full shadow-lg shadow-red-500/20 transition-all transform hover:scale-105">
+              <Button asChild className="bg-white text-red-600 hover:bg-gray-200 font-semibold rounded-full shadow-lg transition-all transform hover:scale-105">
                 <Link href="/register">Sign Up</Link>
               </Button>
             </div>

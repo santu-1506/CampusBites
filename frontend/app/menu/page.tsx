@@ -1,573 +1,411 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useCart } from "@/context/cart-context"
-import { useToast } from "@/components/ui/use-toast"
-import { Search, Star, Clock, Plus, Filter, Heart, Minus } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Search, Star, Clock, MapPin, Heart, Utensils, Sparkles, ChefHat } from "lucide-react"
 import Image from "next/image"
-
-// Indian food categories and items with real food images
-const foodCategories = [
-  { id: "biryani", name: "Biryani", icon: "🍛", color: "from-orange-400 to-red-500" },
-  { id: "curries", name: "Curries", icon: "🍛", color: "from-green-400 to-emerald-500" },
-  { id: "breads", name: "Breads", icon: "🫓", color: "from-yellow-400 to-orange-500" },
-  { id: "snacks", name: "Snacks", icon: "🥟", color: "from-purple-400 to-pink-500" },
-  { id: "desserts", name: "Desserts", icon: "🍰", color: "from-pink-400 to-red-500" },
-  { id: "beverages", name: "Beverages", icon: "☕", color: "from-blue-400 to-purple-500" },
-]
-
-const foodItems = [
-  {
-    id: 1,
-    name: "Hyderabadi Biryani",
-    description:
-      "Aromatic basmati rice with tender mutton pieces, cooked in traditional dum style with saffron and mint",
-    price: 299,
-    originalPrice: 349,
-    image: "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop&crop=center",
-    category: "biryani",
-    rating: 4.8,
-    time: "25-30 min",
-    isVeg: false,
-    spiceLevel: 3,
-    badge: "Bestseller",
-    discount: 15,
-  },
-  {
-    id: 2,
-    name: "Butter Chicken",
-    description: "Creamy tomato-based curry with tender chicken pieces and aromatic Indian spices, served with rice",
-    price: 249,
-    originalPrice: 279,
-    image: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=400&h=300&fit=crop&crop=center",
-    category: "curries",
-    rating: 4.7,
-    time: "20-25 min",
-    isVeg: false,
-    spiceLevel: 2,
-    badge: "Chef's Special",
-    discount: 10,
-  },
-  {
-    id: 3,
-    name: "Paneer Butter Masala",
-    description: "Rich and creamy curry with soft paneer cubes in a tomato-cashew gravy, perfect with naan",
-    price: 199,
-    originalPrice: 229,
-    image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400&h=300&fit=crop&crop=center",
-    category: "curries",
-    rating: 4.6,
-    time: "15-20 min",
-    isVeg: true,
-    spiceLevel: 2,
-    badge: "Popular",
-    discount: 13,
-  },
-  {
-    id: 4,
-    name: "Garlic Naan",
-    description: "Soft and fluffy bread topped with fresh garlic and herbs, baked in traditional tandoor",
-    price: 79,
-    originalPrice: 89,
-    image: "https://images.unsplash.com/photo-1619881589875-d8e6b5b6b1b5?w=400&h=300&fit=crop&crop=center",
-    category: "breads",
-    rating: 4.5,
-    time: "10-15 min",
-    isVeg: true,
-    spiceLevel: 1,
-    badge: "Fresh",
-    discount: 11,
-  },
-  {
-    id: 5,
-    name: "Samosa (2 pcs)",
-    description:
-      "Crispy triangular pastries filled with spiced potatoes and peas, served with mint and tamarind chutney",
-    price: 49,
-    originalPrice: 59,
-    image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop&crop=center",
-    category: "snacks",
-    rating: 4.4,
-    time: "5-10 min",
-    isVeg: true,
-    spiceLevel: 2,
-    badge: "Quick Bite",
-    discount: 17,
-  },
-  {
-    id: 6,
-    name: "Gulab Jamun (4 pcs)",
-    description: "Soft and spongy milk dumplings soaked in rose-flavored sugar syrup, served warm",
-    price: 89,
-    originalPrice: 99,
-    image: "https://images.unsplash.com/photo-1571167530149-c72f2dbf7d28?w=400&h=300&fit=crop&crop=center",
-    category: "desserts",
-    rating: 4.9,
-    time: "5 min",
-    isVeg: true,
-    spiceLevel: 0,
-    badge: "Sweet Treat",
-    discount: 10,
-  },
-  {
-    id: 7,
-    name: "Masala Chai",
-    description: "Traditional Indian tea brewed with aromatic spices, cardamom, ginger and milk",
-    price: 29,
-    originalPrice: 35,
-    image: "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop&crop=center",
-    category: "beverages",
-    rating: 4.3,
-    time: "5 min",
-    isVeg: true,
-    spiceLevel: 1,
-    badge: "Classic",
-    discount: 17,
-  },
-  {
-    id: 8,
-    name: "Chicken Biryani",
-    description: "Fragrant basmati rice layered with marinated chicken and cooked with traditional spices and saffron",
-    price: 249,
-    originalPrice: 289,
-    image: "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop&crop=center",
-    category: "biryani",
-    rating: 4.7,
-    time: "25-30 min",
-    isVeg: false,
-    spiceLevel: 3,
-    badge: "Popular",
-    discount: 14,
-  },
-  {
-    id: 9,
-    name: "Dal Makhani",
-    description: "Creamy black lentils slow-cooked with butter, cream and aromatic spices",
-    price: 179,
-    originalPrice: 199,
-    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&h=300&fit=crop&crop=center",
-    category: "curries",
-    rating: 4.5,
-    time: "15-20 min",
-    isVeg: true,
-    spiceLevel: 2,
-    badge: "Comfort Food",
-    discount: 10,
-  },
-  {
-    id: 10,
-    name: "Tandoori Roti",
-    description: "Whole wheat flatbread cooked in tandoor, perfect accompaniment to curries",
-    price: 39,
-    originalPrice: 45,
-    image: "https://images.unsplash.com/photo-1619881589875-d8e6b5b6b1b5?w=400&h=300&fit=crop&crop=center",
-    category: "breads",
-    rating: 4.2,
-    time: "8-12 min",
-    isVeg: true,
-    spiceLevel: 0,
-    badge: "Healthy",
-    discount: 13,
-  },
-  {
-    id: 11,
-    name: "Pani Puri (6 pcs)",
-    description: "Crispy hollow puris filled with spicy tangy water, chutneys and boiled potatoes",
-    price: 69,
-    originalPrice: 79,
-    image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center",
-    category: "snacks",
-    rating: 4.6,
-    time: "5-8 min",
-    isVeg: true,
-    spiceLevel: 3,
-    badge: "Street Food",
-    discount: 13,
-  },
-  {
-    id: 12,
-    name: "Kulfi (2 pcs)",
-    description: "Traditional Indian ice cream made with condensed milk, cardamom and pistachios",
-    price: 99,
-    originalPrice: 119,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&crop=center",
-    category: "desserts",
-    rating: 4.4,
-    time: "2 min",
-    isVeg: true,
-    spiceLevel: 0,
-    badge: "Frozen Delight",
-    discount: 17,
-  },
-  {
-    id: 13,
-    name: "Lassi (Sweet)",
-    description: "Refreshing yogurt-based drink blended with sugar and cardamom, served chilled",
-    price: 59,
-    originalPrice: 69,
-    image: "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop&crop=center",
-    category: "beverages",
-    rating: 4.3,
-    time: "3 min",
-    isVeg: true,
-    spiceLevel: 0,
-    badge: "Refreshing",
-    discount: 14,
-  },
-  {
-    id: 14,
-    name: "Veg Biryani",
-    description: "Aromatic basmati rice cooked with mixed vegetables, saffron and traditional spices",
-    price: 199,
-    originalPrice: 229,
-    image: "https://images.unsplash.com/photo-1563379091339-03246963d96c?w=400&h=300&fit=crop&crop=center",
-    category: "biryani",
-    rating: 4.4,
-    time: "20-25 min",
-    isVeg: true,
-    spiceLevel: 2,
-    badge: "Veg Special",
-    discount: 13,
-  },
-  {
-    id: 15,
-    name: "Chole Bhature",
-    description: "Spicy chickpea curry served with fluffy deep-fried bread and pickled onions",
-    price: 149,
-    originalPrice: 169,
-    image: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop&crop=center",
-    category: "snacks",
-    rating: 4.5,
-    time: "15-20 min",
-    isVeg: true,
-    spiceLevel: 3,
-    badge: "North Indian",
-    discount: 12,
-  },
-]
+import { Canteen } from "@/types"
+import Link from "next/link"
 
 export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeCategory, setActiveCategory] = useState("all")
-  const [favorites, setFavorites] = useState<number[]>([])
-  const { cart, addToCart, updateQuantity, removeFromCart } = useCart()
-  const { toast } = useToast()
+  const [restaurants, setRestaurants] = useState<Canteen[]>([])
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Canteen[]>([])
+  const [loading, setLoading] = useState(true)
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
-  const filteredItems = foodItems.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = activeCategory === "all" || item.category === activeCategory
-    return matchesSearch && matchesCategory
-  })
+  useEffect(() => {
+    const fetchCanteens = async () => {
+      try {
+        const response = await fetch("/api/v1/canteens")
+        if (!response.ok) {
+          throw new Error("Failed to fetch canteens")
+        }
+        const data = await response.json()
+        setRestaurants(data.data)
+        setFilteredRestaurants(data.data)
+      } catch (error) {
+        console.error("Error fetching canteens:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const getCartItemQuantity = (itemId: number) => {
-    const cartItem = cart.find((item) => item.id === itemId)
-    return cartItem ? cartItem.quantity : 0
-  }
+    fetchCanteens()
+  }, [])
 
-  const handleAddToCart = (item: (typeof foodItems)[0]) => {
-    addToCart({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      quantity: 1,
-      image: item.image,
-    })
+  useEffect(() => {
+    const filtered = restaurants.filter((restaurant) =>
+      restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    setFilteredRestaurants(filtered)
+  }, [searchQuery, restaurants])
 
-    toast({
-      title: "Added to cart! 🛒",
-      description: `${item.name} has been added to your cart.`,
-    })
-  }
-
-  const handleIncrement = (item: (typeof foodItems)[0]) => {
-    const currentQuantity = getCartItemQuantity(item.id)
-    if (currentQuantity === 0) {
-      handleAddToCart(item)
-    } else {
-      updateQuantity(item.id, currentQuantity + 1)
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
     }
   }
 
-  const handleDecrement = (item: (typeof foodItems)[0]) => {
-    const currentQuantity = getCartItemQuantity(item.id)
-    if (currentQuantity > 1) {
-      updateQuantity(item.id, currentQuantity - 1)
-    } else if (currentQuantity === 1) {
-      removeFromCart(item.id)
-      toast({
-        title: "Removed from cart",
-        description: `${item.name} has been removed from your cart.`,
-      })
+  const cardVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 50,
+      scale: 0.9
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 0.6
+      }
     }
   }
 
-  const toggleFavorite = (itemId: number) => {
-    setFavorites((prev) => (prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId]))
+  const searchVariants = {
+    hidden: { opacity: 0, y: -50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 20
+      }
+    }
   }
 
-  const getSpiceIndicator = (level: number) => {
-    return "🌶️".repeat(level) + "⚪".repeat(3 - level)
+  const floatingVariants = {
+    animate: {
+      y: [-10, 10, -10],
+      rotate: [0, 2, -2, 0],
+      transition: {
+        duration: 6,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
   }
 
-  const renderFoodCard = (item: (typeof foodItems)[0], index: number) => {
-    const cartQuantity = getCartItemQuantity(item.id)
-
+  if (loading) {
     return (
-      <div
-        key={item.id}
-        className="group bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden hover:bg-gray-800/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl animate-fade-in"
-        style={{ animationDelay: `${index * 0.1}s` }}
-      >
-        <div className="relative h-48 overflow-hidden">
-          <Image
-            src={item.image || "/placeholder.svg"}
-            alt={item.name}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-700"
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"
           />
-
-          {/* Badges */}
-          <div className="absolute top-3 left-3">
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-              {item.badge}
-            </span>
-          </div>
-
-          <div className="absolute top-3 right-3 flex gap-2">
-            {item.discount > 0 && (
-              <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                {item.discount}% OFF
-              </span>
-            )}
-            <button
-              onClick={() => toggleFavorite(item.id)}
-              className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-            >
-              <Heart
-                className={`w-4 h-4 ${favorites.includes(item.id) ? "text-red-500 fill-current" : "text-gray-600"}`}
-              />
-            </button>
-          </div>
-
-          {/* Veg/Non-veg indicator */}
-          <div className="absolute bottom-3 left-3">
-            <div
-              className={`w-6 h-6 border-2 flex items-center justify-center ${
-                item.isVeg ? "border-green-500" : "border-red-500"
-              }`}
-            >
-              <div className={`w-3 h-3 rounded-full ${item.isVeg ? "bg-green-500" : "bg-red-500"}`}></div>
-            </div>
-          </div>
-
-          {/* Rating */}
-          <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
-            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            <span className="text-xs font-semibold text-gray-800">{item.rating}</span>
-          </div>
-        </div>
-
-        <div className="p-4">
-          <h3 className="text-lg font-bold mb-2 text-white group-hover:text-orange-400 transition-colors">
-            {item.name}
-          </h3>
-          <p className="text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
-
-          {/* Spice Level */}
-          {item.spiceLevel > 0 && (
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs text-gray-400">Spice Level:</span>
-              <span className="text-sm">{getSpiceIndicator(item.spiceLevel)}</span>
-            </div>
-          )}
-
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-orange-400">₹{item.price}</span>
-              {item.originalPrice > item.price && (
-                <span className="text-sm text-gray-500 line-through">₹{item.originalPrice}</span>
-              )}
-            </div>
-            <div className="flex items-center gap-1 text-gray-400">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm">{item.time}</span>
-            </div>
-          </div>
-
-          {/* Cart Controls */}
-          {cartQuantity === 0 ? (
-            <Button
-              onClick={() => handleAddToCart(item)}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold py-3 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add to Cart
-            </Button>
-          ) : (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 bg-gray-700/50 rounded-full p-1">
-                <Button
-                  onClick={() => handleDecrement(item)}
-                  className="bg-red-500/80 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 hover:scale-110"
-                  size="sm"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="font-bold text-lg text-white min-w-[2rem] text-center">
-                  {cartQuantity}
-                </span>
-                <Button
-                  onClick={() => handleIncrement(item)}
-                  className="bg-green-500/80 hover:bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 hover:scale-110"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-400">In Cart</p>
-                <p className="text-sm font-semibold text-orange-400">
-                  ₹{(item.price * cartQuantity).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-white text-xl font-light"
+          >
+            Preparing your culinary journey...
+          </motion.p>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pt-16">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center animate-float">
-            <span className="text-2xl">🍛</span>
-          </div>
-          <div className="absolute top-40 right-32 w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center animate-float-delayed">
-            <span className="text-xl">🍜</span>
-          </div>
-          <div className="absolute bottom-32 left-16 w-14 h-14 bg-yellow-500/10 rounded-full flex items-center justify-center animate-bounce-slow">
-            <span className="text-xl">🥘</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          variants={floatingVariants}
+          animate="animate"
+          className="absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"
+        />
+        <motion.div
+          variants={floatingVariants}
+          animate="animate"
+          style={{ animationDelay: "2s" }}
+          className="absolute top-40 right-32 w-24 h-24 bg-pink-500/10 rounded-full blur-xl"
+        />
+        <motion.div
+          variants={floatingVariants}
+          animate="animate"
+          style={{ animationDelay: "4s" }}
+          className="absolute bottom-32 left-16 w-40 h-40 bg-blue-500/10 rounded-full blur-xl"
+        />
+        
+        {/* Cinematic light rays */}
+        <motion.div
+          initial={{ opacity: 0, rotate: 0 }}
+          animate={{ opacity: [0.1, 0.3, 0.1], rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-0 left-1/2 w-96 h-96 bg-gradient-conic from-purple-500/20 via-transparent to-purple-500/20 -translate-x-1/2 -translate-y-1/2"
+        />
+      </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-12 animate-slide-up">
-            <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                Authentic
-              </span>{" "}
-              <span className="text-white">Indian Cuisine</span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Discover the rich flavors of India with our carefully curated menu of traditional dishes
-            </p>
+      <div className="relative z-10">
+        {/* Hero Section with Search */}
+        <motion.section
+          initial="hidden"
+          animate="visible"
+          variants={searchVariants}
+          className="pt-24 pb-16 px-6"
+        >
+          <div className="max-w-7xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.8 }}
+              className="mb-8"
+            >
+              <h1 className="text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                Menu
+              </h1>
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mb-6"
+              />
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light">
+                Discover extraordinary culinary experiences crafted by passionate chefs
+              </p>
+            </motion.div>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            {/* Cinematic Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="relative max-w-2xl mx-auto"
+            >
+              <div className="relative group">
+                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 group-hover:text-purple-400 transition-colors duration-300" />
                 <Input
                   type="text"
-                  placeholder="Search for dishes, restaurants, or cuisines..."
+                  placeholder="Search restaurants, cuisines, or dishes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-20 py-4 bg-gray-800/50 border-gray-700 rounded-full text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent backdrop-blur-sm"
+                  className="w-full pl-16 pr-6 py-6 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/15"
                 />
-                <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-full px-6">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter
-                </Button>
-              </div>
-            </div>
-
-            {/* Menu Statistics */}
-            <div className="max-w-4xl mx-auto mb-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-orange-400">{filteredItems.length}</div>
-                  <div className="text-sm text-gray-400">
-                    {searchQuery || activeCategory !== "all" ? "Filtered Items" : "Total Items"}
-                  </div>
-                </div>
-                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-green-400">{cart.reduce((sum, item) => sum + item.quantity, 0)}</div>
-                  <div className="text-sm text-gray-400">Items in Cart</div>
-                </div>
-                <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-blue-400">₹{cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}</div>
-                  <div className="text-sm text-gray-400">Cart Total</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Menu Section */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <Tabs defaultValue="all" className="w-full">
-            <div className="flex justify-center items-center mb-8 gap-4">
-              <TabsList className="mx-auto bg-gray-800/80 backdrop-blur-sm border border-gray-700/60 rounded-full p-2 gap-2">
-                <TabsTrigger
-                  value="all"
-                  className="group relative px-4 py-2 text-sm font-medium text-gray-300 rounded-full hover:bg-orange-600/20 hover:text-white transition-all duration-300 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: searchQuery ? 1 : 0 }}
+                  className="absolute right-6 top-1/2 transform -translate-y-1/2"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    All Items
-                    <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded-full group-data-[state=active]:bg-white group-data-[state=active]:text-orange-500">
-                      {foodItems.length}
-                    </span>
-                  </span>
-                </TabsTrigger>
-                {foodCategories.map((category) => {
-                  const categoryItemCount = foodItems.filter(item => item.category === category.id).length;
-                  return (
-                    <TabsTrigger
-                      key={category.id}
-                      value={category.id}
-                      className="group relative px-4 py-2 text-sm font-medium text-gray-300 rounded-full hover:bg-orange-600/20 hover:text-white transition-all duration-300 data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-lg"
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        {category.icon}
-                        {category.name}
-                        <span className="bg-gray-600 text-white text-xs px-2 py-1 rounded-full group-data-[state=active]:bg-white group-data-[state=active]:text-orange-500">
-                          {categoryItemCount}
-                        </span>
-                      </span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-            </div>
-
-            <TabsContent value="all">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {filteredItems.map((item, index) => renderFoodCard(item, index))}
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                </motion.div>
               </div>
-            </TabsContent>
+            </motion.div>
+          </div>
+        </motion.section>
 
-            {foodCategories.map((category) => (
-              <TabsContent key={category.id} value={category.id} className="mt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredItems
-                    .filter((item) => item.category === category.id)
-                    .map((item, index) => renderFoodCard(item, index))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      </section>
+        {/* Restaurant Grid */}
+        <motion.section
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="px-6 pb-24"
+        >
+          <div className="max-w-7xl mx-auto">
+            <AnimatePresence mode="wait">
+              {filteredRestaurants.length > 0 ? (
+                <motion.div
+                  key="restaurants"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
+                  {filteredRestaurants.map((restaurant, index) => (
+                    <motion.div
+                      key={restaurant._id}
+                      variants={cardVariants}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        rotateY: 5,
+                        transition: { type: "spring", stiffness: 300, damping: 20 }
+                      }}
+                      onHoverStart={() => setHoveredCard(restaurant._id)}
+                      onHoverEnd={() => setHoveredCard(null)}
+                      className="group relative"
+                    >
+                      <Card className="bg-white/10 backdrop-blur-xl border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-500 h-full">
+                        <div className="relative overflow-hidden">
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.6 }}
+                            className="relative"
+                          >
+                            <Image
+                              src={restaurant.image || "/placeholder.svg"}
+                              alt={restaurant.name}
+                              width={400}
+                              height={250}
+                              className="w-full h-64 object-cover"
+                            />
+                            
+                            {/* Cinematic overlay */}
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: hoveredCard === restaurant._id ? 1 : 0 }}
+                              className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+                            />
+                          </motion.div>
+
+                          {/* Floating badges */}
+                          <div className="absolute top-4 left-4 flex flex-col gap-2">
+                            {restaurant.featured && (
+                              <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                              >
+                                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold px-3 py-1 shadow-lg">
+                                  <Sparkles className="w-4 h-4 mr-1" />
+                                  Featured
+                                </Badge>
+                              </motion.div>
+                            )}
+                            {restaurant.discount && (
+                              <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 + 0.1 }}
+                              >
+                                <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold px-3 py-1 shadow-lg">
+                                  {restaurant.discount}
+                                </Badge>
+                              </motion.div>
+                            )}
+                          </div>
+
+                          {/* Heart button */}
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="absolute top-4 right-4"
+                          >
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-white/30 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-full w-10 h-10 p-0"
+                            >
+                              <Heart className="w-4 h-4" />
+                            </Button>
+                          </motion.div>
+
+                          {/* Closed overlay */}
+                          <AnimatePresence>
+                            {!restaurant.isOpen && (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center"
+                              >
+                                <Badge variant="destructive" className="text-lg px-6 py-2 font-bold">
+                                  Closed
+                                </Badge>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        <CardHeader className="pb-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <CardTitle className="text-2xl text-white mb-2 group-hover:text-purple-200 transition-colors">
+                                {restaurant.name}
+                              </CardTitle>
+                              <CardDescription className="text-gray-300 flex items-center gap-2">
+                                <ChefHat className="w-4 h-4" />
+                                {restaurant.cuisine}
+                              </CardDescription>
+                            </div>
+                            <motion.div
+                              whileHover={{ scale: 1.1 }}
+                              className="flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full"
+                            >
+                              <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                              <span className="text-white font-bold">{restaurant.rating}</span>
+                            </motion.div>
+                          </div>
+                        </CardHeader>
+
+                        <CardContent className="pt-0">
+                          <div className="flex items-center justify-between text-sm text-gray-300 mb-6">
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-purple-400" />
+                              <span>{restaurant.deliveryTime}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-purple-400" />
+                              <span>{restaurant.distance}</span>
+                            </div>
+                          </div>
+
+                          <Link href={`/menu/${restaurant._id}`}>
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <Button
+                                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                                disabled={!restaurant.isOpen}
+                              >
+                                <Utensils className="w-5 h-5 mr-2" />
+                                {restaurant.isOpen ? "View Menu" : "Closed"}
+                              </Button>
+                            </motion.div>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="no-results"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  className="text-center py-20"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+                    className="w-32 h-32 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-8"
+                  >
+                    <Search className="w-16 h-16 text-purple-400" />
+                  </motion.div>
+                  <h3 className="text-3xl font-bold text-white mb-4">No matches found</h3>
+                  <p className="text-gray-400 text-lg max-w-md mx-auto">
+                    Try adjusting your search to discover amazing restaurants
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.section>
+      </div>
     </div>
   )
 }

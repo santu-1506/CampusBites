@@ -1,0 +1,15 @@
+const Item = require("../models/Item");
+
+exports.getMenuByCanteen = async (req, res) => {
+  try {
+    const { canteenId } = req.params;
+    const menuItems = await Item.find({ canteen: canteenId });
+
+    res.status(200).json({
+      success: true,
+      data: menuItems,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+  }
+}; 

@@ -245,10 +245,8 @@ const AdminDashboard = () => {
 
       <div className="flex">
         {/* Sidebar */}
-        <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
-          <div className="flex flex-col h-full pt-20 lg:pt-6">
+        <div className="w-64 bg-white shadow-lg border-r border-gray-100 min-h-[calc(100vh-72px)] hidden lg:block">
+          <div className="flex flex-col h-full pt-6">
             <div className="px-6 pb-6">
               <nav className="space-y-2">
                 {sidebarItems.map((item) => (

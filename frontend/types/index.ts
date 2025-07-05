@@ -44,6 +44,21 @@ export interface Order {
   }>;
   total: number;
   status: "placed" | "preparing" | "ready" | "completed" | "cancelled";
+  payment?: {
+    method: "cod" | "upi" | "card";
+    status: "pending" | "completed" | "failed" | "refunded";
+    transactionId?: string;
+    upiDetails?: {
+      upiId: string;
+      paymentApp: string;
+    };
+    cardDetails?: {
+      lastFourDigits: string;
+      cardType: string;
+      holderName: string;
+    };
+    paidAt?: string;
+  };
   placedAt: string;
   updatedAt: string;
 }

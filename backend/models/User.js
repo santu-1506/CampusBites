@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ["student", "canteen"], required: true },
   campus: { type: mongoose.Schema.Types.ObjectId, ref: "Campus", required: true },
   canteenId: { type: mongoose.Schema.Types.ObjectId, ref: "Canteen" },
+  profileImage: { type: String },
 });
 
 module.exports = mongoose.model("User", UserSchema);

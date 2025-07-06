@@ -1,17 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const {
-  getOrders,
-  getOrderById,
-  createOrder,
-  updatePaymentStatus,
-  verifyPayment,
-} = require("../controllers/orderController");
+const { getMyOrders, createOrder } = require('../controllers/orderController');
+const { protect } = require('../middleware/auth');
 
-// In a real app, you'd protect these routes with authentication middleware
-router.route("/").get(getOrders).post(createOrder);
-router.route("/:id").get(getOrderById);
-router.route("/:id/payment").put(updatePaymentStatus);
-router.route("/:id/verify-payment").post(verifyPayment);
+// All routes here are protected
+router.route('/')
+    .get(protect, getMyOrders)
+    .post(protect, createOrder);
 
 module.exports = router; 

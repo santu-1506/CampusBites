@@ -1,8 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getMenuByCanteen, getItemById } = require('../controllers/menuController');
+const { getMenuByCanteenId, createMenuItem, updateMenuItem, deleteMenuItem } = require("../controllers/menuController");
 
-router.get('/:canteenId', getMenuByCanteen);
-router.get('/item/:itemId', getItemById);
+// Get menu items by canteen ID
+router.get("/:canteenId", getMenuByCanteenId);
+
+// Create new menu item
+router.post("/", createMenuItem);
+
+// Update menu item
+router.put("/:id", updateMenuItem);
+
+// Delete menu item
+router.delete("/:id", deleteMenuItem);
 
 module.exports = router; 

@@ -25,26 +25,34 @@ import {
 import Image from 'next/image';
 import { Canteen } from '@/types';
 import Link from 'next/link';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [restaurants, setRestaurants] = useState<Canteen[]>([]);
-  const [filteredRestaurants, setFilteredRestaurants] = useState<Canteen[]>([]);
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
+  const [filteredCanteens, setFilteredCanteens] = useState<Canteen[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCanteens = async () => {
       try {
-        const response = await fetch('/api/v1/canteens');
+        console.log('🔍 Fetching canteens from:', API_ENDPOINTS.CANTEENS);
+        const response = await fetch(API_ENDPOINTS.CANTEENS);
+        console.log('📡 Response status:', response.status);
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch canteens');
+          throw new Error(`Failed to fetch canteens: ${response.status} ${response.statusText}`);
         }
+        
         const data = await response.json();
-        setRestaurants(data.data);
-        setFilteredRestaurants(data.data);
+        console.log('📋 Received data:', data);
+        console.log('🏢 Number of canteens:', data.data?.length || 0);
+        
+        setCanteens(data.data || []);
+        setFilteredCanteens(data.data || []);
       } catch (error) {
-        console.error('Error fetching canteens:', error);
+        console.error('❌ Error fetching canteens:', error);
       } finally {
         setLoading(false);
       }
@@ -54,13 +62,13 @@ export default function MenuPage() {
   }, []);
 
   useEffect(() => {
-    const filtered = restaurants.filter(
-      (restaurant) =>
-        restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = canteens.filter(
+      (canteen) =>
+        canteen.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        canteen.cuisine.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredRestaurants(filtered);
-  }, [searchQuery, restaurants]);
+    setFilteredCanteens(filtered);
+  }, [searchQuery, canteens]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -119,7 +127,7 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] flex items-center justify-center'>
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -128,14 +136,14 @@ export default function MenuPage() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-            className='w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4'
+            className='w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4'
           />
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             className='text-white text-xl font-light'>
-            Preparing your culinary journey...
+            Discovering your favorite canteens...
           </motion.p>
         </motion.div>
       </div>
@@ -143,33 +151,33 @@ export default function MenuPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] relative overflow-hidden'>
       {/* Animated Background Elements */}
       <div className='absolute inset-0 overflow-hidden'>
         <motion.div
           variants={floatingVariants}
           animate='animate'
-          className='absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-xl'
+          className='absolute top-20 left-20 w-32 h-32 bg-red-500/10 rounded-full blur-xl'
         />
         <motion.div
           variants={floatingVariants}
           animate='animate'
           style={{ animationDelay: '2s' }}
-          className='absolute top-40 right-32 w-24 h-24 bg-pink-500/10 rounded-full blur-xl'
+          className='absolute top-40 right-32 w-24 h-24 bg-red-500/15 rounded-full blur-xl'
         />
         <motion.div
           variants={floatingVariants}
           animate='animate'
           style={{ animationDelay: '4s' }}
-          className='absolute bottom-32 left-16 w-40 h-40 bg-blue-500/10 rounded-full blur-xl'
+          className='absolute bottom-32 left-16 w-40 h-40 bg-white/5 rounded-full blur-2xl'
         />
 
-        {/* Cinematic light rays */}
+        {/* Subtle light rays */}
         <motion.div
           initial={{ opacity: 0, rotate: 0 }}
-          animate={{ opacity: [0.1, 0.3, 0.1], rotate: 360 }}
+          animate={{ opacity: [0.05, 0.15, 0.05], rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className='absolute top-0 left-1/2 w-96 h-96 bg-gradient-conic from-purple-500/20 via-transparent to-purple-500/20 -translate-x-1/2 -translate-y-1/2'
+          className='absolute top-0 left-1/2 w-96 h-96 bg-gradient-conic from-red-500/10 via-transparent to-red-500/10 -translate-x-1/2 -translate-y-1/2'
         />
       </div>
 
@@ -186,18 +194,17 @@ export default function MenuPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.8 }}
               className='mb-8'>
-              <h1 className='text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent'>
-                Menu
+              <h1 className='text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-white via-red-200 to-rose-200 bg-clip-text text-transparent'>
+                Campus Canteens
               </h1>
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
-                className='w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mb-6'
+                className='w-24 h-1 bg-gradient-to-r from-red-500 to-rose-500 mx-auto mb-6'
               />
               <p className='text-xl text-gray-300 max-w-2xl mx-auto font-light'>
-                Discover extraordinary culinary experiences crafted by
-                passionate chefs
+                Discover delicious meals from your favorite campus canteens, delivered fresh and fast
               </p>
             </motion.div>
 
@@ -211,16 +218,16 @@ export default function MenuPage() {
                 <Search className='absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 group-hover:text-purple-400 transition-colors duration-300' />
                 <Input
                   type='text'
-                  placeholder='Search restaurants, cuisines, or dishes...'
+                  placeholder='Search canteens, cuisines, or dishes...'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className='w-full pl-16 pr-6 py-6 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/15'
+                  className='w-full pl-16 pr-6 py-6 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 hover:bg-white/15'
                 />
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: searchQuery ? 1 : 0 }}
                   className='absolute right-6 top-1/2 transform -translate-y-1/2'>
-                  <Sparkles className='w-5 h-5 text-purple-400' />
+                  <Sparkles className='w-5 h-5 text-red-400' />
                 </motion.div>
               </div>
             </motion.div>
@@ -235,16 +242,16 @@ export default function MenuPage() {
           className='px-6 pb-24'>
           <div className='max-w-7xl mx-auto'>
             <AnimatePresence mode='wait'>
-              {filteredRestaurants.length > 0 ? (
+              {filteredCanteens.length > 0 ? (
                 <motion.div
                   key='restaurants'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                  {filteredRestaurants.map((restaurant, index) => (
+                  {filteredCanteens.map((canteen, index) => (
                     <motion.div
-                      key={restaurant._id}
+                      key={canteen._id}
                       variants={cardVariants}
                       whileHover={{
                         scale: 1.05,
@@ -255,7 +262,7 @@ export default function MenuPage() {
                           damping: 20,
                         },
                       }}
-                      onHoverStart={() => setHoveredCard(restaurant._id)}
+                      onHoverStart={() => setHoveredCard(canteen._id)}
                       onHoverEnd={() => setHoveredCard(null)}
                       className='group relative'>
                       <Card className='bg-white/10 backdrop-blur-xl border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-500 h-full'>
@@ -265,8 +272,8 @@ export default function MenuPage() {
                             transition={{ duration: 0.6 }}
                             className='relative'>
                             <Image
-                              src={restaurant.image || '/placeholder.svg'}
-                              alt={restaurant.name}
+                              src={canteen.image || '/placeholder.svg'}
+                              alt={canteen.name}
                               width={400}
                               height={250}
                               className='w-full h-64 object-cover'
@@ -276,7 +283,7 @@ export default function MenuPage() {
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{
-                                opacity: hoveredCard === restaurant._id ? 1 : 0,
+                                opacity: hoveredCard === canteen._id ? 1 : 0,
                               }}
                               className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent'
                             />
@@ -284,7 +291,7 @@ export default function MenuPage() {
 
                           {/* Floating badges */}
                           <div className='absolute top-4 left-4 flex flex-col gap-2'>
-                            {restaurant.featured && (
+                            {canteen.featured && (
                               <motion.div
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
@@ -295,13 +302,13 @@ export default function MenuPage() {
                                 </Badge>
                               </motion.div>
                             )}
-                            {restaurant.discount && (
+                            {canteen.discount && (
                               <motion.div
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 + 0.1 }}>
                                 <Badge className='bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold px-3 py-1 shadow-lg'>
-                                  {restaurant.discount}
+                                  {canteen.discount}
                                 </Badge>
                               </motion.div>
                             )}
@@ -322,7 +329,7 @@ export default function MenuPage() {
 
                           {/* Closed overlay */}
                           <AnimatePresence>
-                            {!restaurant.isOpen && (
+                            {!canteen.isOpen && (
                               <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -341,12 +348,12 @@ export default function MenuPage() {
                         <CardHeader className='pb-4'>
                           <div className='flex items-start justify-between'>
                             <div className='flex-1'>
-                              <CardTitle className='text-2xl text-white mb-2 group-hover:text-purple-200 transition-colors'>
-                                {restaurant.name}
+                              <CardTitle className='text-2xl text-white mb-2 group-hover:text-red-200 transition-colors'>
+                                {canteen.name}
                               </CardTitle>
                               <CardDescription className='text-gray-300 flex items-center gap-2'>
                                 <ChefHat className='w-4 h-4' />
-                                {restaurant.cuisine}
+                                {canteen.cuisine}
                               </CardDescription>
                             </div>
                             <motion.div
@@ -354,7 +361,7 @@ export default function MenuPage() {
                               className='flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full'>
                               <Star className='w-4 h-4 text-yellow-400 fill-current' />
                               <span className='text-white font-bold'>
-                                {restaurant.rating}
+                                {canteen.rating}
                               </span>
                             </motion.div>
                           </div>
@@ -363,24 +370,24 @@ export default function MenuPage() {
                         <CardContent className='pt-0'>
                           <div className='flex items-center justify-between text-sm text-gray-300 mb-6'>
                             <div className='flex items-center gap-2'>
-                              <Clock className='w-4 h-4 text-purple-400' />
-                              <span>{restaurant.deliveryTime}</span>
+                              <Clock className='w-4 h-4 text-red-400' />
+                              <span>{canteen.deliveryTime}</span>
                             </div>
                             <div className='flex items-center gap-2'>
-                              <MapPin className='w-4 h-4 text-purple-400' />
-                              <span>{restaurant.distance}</span>
+                              <MapPin className='w-4 h-4 text-red-400' />
+                              <span>{canteen.distance}</span>
                             </div>
                           </div>
 
-                          <Link href={`/menu/${restaurant._id}`}>
+                          <Link href={`/menu/${canteen._id}`}>
                             <motion.div
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}>
                               <Button
-                                className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25'
-                                disabled={!restaurant.isOpen}>
+                                className='w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-red-500/25'
+                                disabled={!canteen.isOpen}>
                                 <Utensils className='w-5 h-5 mr-2' />
-                                {restaurant.isOpen ? 'View Menu' : 'Closed'}
+                                {canteen.isOpen ? 'View Menu' : 'Closed'}
                               </Button>
                             </motion.div>
                           </Link>
@@ -400,14 +407,14 @@ export default function MenuPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: 'spring', stiffness: 100, delay: 0.2 }}
-                    className='w-32 h-32 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-8'>
-                    <Search className='w-16 h-16 text-purple-400' />
+                    className='w-32 h-32 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-8'>
+                    <Search className='w-16 h-16 text-red-400' />
                   </motion.div>
                   <h3 className='text-3xl font-bold text-white mb-4'>
-                    No matches found
+                    No canteens found
                   </h3>
                   <p className='text-gray-400 text-lg max-w-md mx-auto'>
-                    Try adjusting your search to discover amazing restaurants
+                    Try adjusting your search to discover amazing campus canteens
                   </p>
                 </motion.div>
               )}

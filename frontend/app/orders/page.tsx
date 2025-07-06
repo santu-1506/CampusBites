@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2, Inbox, AlertCircle } from "lucide-react"
 
 export default function OrdersPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, token } = useAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,7 +23,11 @@ export default function OrdersPage() {
         try {
           setLoading(true)
           setError(null)
-          const res = await fetch("/api/v1/orders")
+          const res = await fetch("/api/orders", {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
           if (!res.ok) {
             throw new Error("Failed to fetch orders")
           }
@@ -37,7 +41,7 @@ export default function OrdersPage() {
       }
       fetchOrders()
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, token])
 
   if (!isAuthenticated) {
     return (

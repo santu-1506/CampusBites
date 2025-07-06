@@ -12,6 +12,7 @@ import { Canteen, Item } from "@/types"
 import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 import Link from "next/link"
+import { API_ENDPOINTS } from "@/lib/constants"
 
 const CanteenMenuPage = () => {
   const params = useParams()
@@ -30,10 +31,10 @@ const CanteenMenuPage = () => {
     if (canteenId) {
       const fetchCanteenDetails = async () => {
         try {
-          const res = await fetch(`/api/v1/canteens/${canteenId}`)
+          const res = await fetch(`${API_ENDPOINTS.CANTEENS}/${canteenId}`)
           if (!res.ok) throw new Error("Failed to fetch canteen details")
           const data = await res.json()
-          setCanteen(data.data)
+          setCanteen(data.canteen) // Changed from data.data to data.canteen to match backend response
         } catch (error) {
           console.error(error)
           toast({ variant: "destructive", title: "Error", description: "Could not fetch canteen details." })
@@ -42,10 +43,10 @@ const CanteenMenuPage = () => {
 
       const fetchMenuItems = async () => {
         try {
-          const res = await fetch(`/api/v1/menu/${canteenId}`)
+          const res = await fetch(`${API_ENDPOINTS.MENU}/${canteenId}`)
           if (!res.ok) throw new Error("Failed to fetch menu")
           const data = await res.json()
-          setMenuItems(data.data)
+          setMenuItems(data.data || [])
         } catch (error) {
           console.error(error)
           toast({ variant: "destructive", title: "Error", description: "Could not fetch menu items." })
@@ -176,7 +177,7 @@ const CanteenMenuPage = () => {
                         </CardHeader>
                         <CardContent className="flex-grow flex flex-col justify-end">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="font-bold text-lg">₹{item.price}</span>
+                                <span className="font-bold text-lg">₹{item.price || "N/A"}</span>
                                 <Badge variant={item.isVeg ? "default" : "destructive"}>{item.isVeg ? "Veg" : "Non-Veg"}</Badge>
                             </div>
                             {quantity === 0 ? (

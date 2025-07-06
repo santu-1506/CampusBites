@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,9 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 import {
   Search,
   Filter,
@@ -24,6 +32,9 @@ import {
   Phone,
   Mail,
   ExternalLink,
+  Heart,
+  Utensils,
+  ChefHat,
 } from 'lucide-react';
 
 interface FoodVendor {
@@ -289,20 +300,193 @@ export default function CampusStorePage() {
     }
   };
 
+  const renderVendorsContent = () => {
+    if (isLoading) {
+      return (
+        <div className='flex items-center justify-center py-12'>
+          <Loader2 className='h-8 w-8 animate-spin text-primary' />
+          <span className='ml-2 text-lg'>Loading vendors...</span>
+        </div>
+      );
+    }
+
+    if (filteredVendors.length === 0) {
+      return (
+        <div className='text-center py-12'>
+          <Store className='h-12 w-12 text-gray-400 mx-auto mb-4' />
+          <h3 className='text-lg font-medium text-gray-900 mb-2'>
+            No vendors found
+          </h3>
+          <p className='text-gray-500'>
+            {searchQuery
+              ? 'Try adjusting your search terms'
+              : 'No vendors available at the moment'}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+        {filteredVendors.map((vendor, index) => (
+          <div key={vendor.id} className='group relative'>
+            <Card className='bg-white/10 backdrop-blur-xl border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-500 h-full'>
+              <div className='relative overflow-hidden'>
+                <div className='relative'>
+                  <img
+                    src={vendor.image}
+                    alt={vendor.name}
+                    className='w-full h-64 object-cover'
+                  />
+
+                  {/* Cinematic overlay */}
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+                </div>
+
+                {/* Floating badges */}
+                <div className='absolute top-4 left-4 flex flex-col gap-2'>
+                  <div>
+                    <Badge className='bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold px-3 py-1 shadow-lg'>
+                      {vendor.priceRange}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Heart button */}
+                <div className='absolute top-4 right-4'>
+                  <Button
+                    size='sm'
+                    variant='outline'
+                    className='border-white/30 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-full w-10 h-10 p-0'>
+                    <Heart className='w-4 h-4' />
+                  </Button>
+                </div>
+
+                {/* Closed overlay */}
+                {!vendor.isOpen && (
+                  <div className='absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center'>
+                    <Badge
+                      variant='destructive'
+                      className='text-lg px-6 py-2 font-bold'>
+                      Closed
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              <CardHeader className='pb-4'>
+                <div className='flex items-start justify-between'>
+                  <div className='flex-1'>
+                    <CardTitle className='text-2xl text-white mb-2 group-hover:text-purple-200 transition-colors'>
+                      {vendor.name}
+                    </CardTitle>
+                    <CardDescription className='text-gray-300 flex items-center gap-2'>
+                      <ChefHat className='w-4 h-4' />
+                      {vendor.cuisine}
+                    </CardDescription>
+                  </div>
+                  <div className='flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full'>
+                    <Star className='w-4 h-4 text-yellow-400 fill-current' />
+                    <span className='text-white font-bold'>
+                      {vendor.rating}
+                    </span>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className='pt-0'>
+                <p className='text-sm text-gray-300 line-clamp-2 mb-4'>
+                  {vendor.description}
+                </p>
+
+                <div className='flex items-center justify-between text-sm text-gray-300 mb-4'>
+                  <div className='flex items-center gap-2'>
+                    <Clock className='w-4 w-4 text-purple-400' />
+                    <span>{vendor.operatingHours}</span>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <MapPin className='w-4 w-4 text-purple-400' />
+                    <span>{vendor.location}</span>
+                  </div>
+                </div>
+
+                <div className='mb-4'>
+                  <p className='text-sm font-medium text-gray-300 mb-2'>
+                    Specialties:
+                  </p>
+                  <div className='flex flex-wrap gap-1'>
+                    {vendor.specialties.slice(0, 3).map((specialty, index) => (
+                      <Badge
+                        key={index}
+                        variant='outline'
+                        className='text-xs bg-white/10 border-white/20 text-white'>
+                        {specialty}
+                      </Badge>
+                    ))}
+                    {vendor.specialties.length > 3 && (
+                      <Badge
+                        variant='outline'
+                        className='text-xs bg-white/10 border-white/20 text-white'>
+                        +{vendor.specialties.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                <Link href={`/menu/${vendor.id}`}>
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}>
+                    <Button
+                      className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25'
+                      disabled={!vendor.isOpen}>
+                      <Utensils className='w-5 h-5 mr-2' />
+                      {vendor.isOpen ? 'View Menu' : 'Closed'}
+                    </Button>
+                  </motion.div>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className='min-h-screen bg-gray-50'>
-      {/* Header */}
-      <div className='bg-white border-b'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
-          <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
-            <div>
-              <h1 className='text-3xl font-bold text-gray-900'>
+    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden'>
+      {/* Animated Background Elements */}
+      <div className='absolute inset-0 overflow-hidden'>
+        <div className='absolute top-20 left-20 w-32 h-32 bg-purple-500/10 rounded-full blur-xl animate-pulse' />
+        <div
+          className='absolute top-40 right-32 w-24 h-24 bg-pink-500/10 rounded-full blur-xl animate-pulse'
+          style={{ animationDelay: '2s' }}
+        />
+        <div
+          className='absolute bottom-32 left-16 w-40 h-40 bg-blue-500/10 rounded-full blur-xl animate-pulse'
+          style={{ animationDelay: '4s' }}
+        />
+
+        {/* Cinematic light rays */}
+        <div
+          className='absolute top-0 left-1/2 w-96 h-96 bg-gradient-conic from-purple-500/20 via-transparent to-purple-500/20 -translate-x-1/2 -translate-y-1/2 animate-spin'
+          style={{ animationDuration: '20s' }}
+        />
+      </div>
+
+      <div className='relative z-10'>
+        {/* Header */}
+        <div className='pt-24 pb-16 px-6'>
+          <div className='max-w-7xl mx-auto text-center'>
+            <div className='mb-8'>
+              <h1 className='text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent'>
                 Campus Food Vendors
               </h1>
-              <p className='text-gray-600 mt-1'>
+              <div className='w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mb-6' />
+              <p className='text-xl text-gray-300 max-w-2xl mx-auto font-light'>
                 Discover and order from the best food outlets on campus
               </p>
-              <div className='flex items-center gap-4 mt-2 text-sm text-gray-500'>
+              <div className='flex items-center justify-center gap-4 mt-4 text-sm text-gray-400'>
                 <div className='flex items-center gap-1'>
                   <Store className='h-4 w-4' />
                   <span>{filteredVendors.length} vendors available</span>
@@ -315,28 +499,29 @@ export default function CampusStorePage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Filters and Search */}
-      <div className='bg-white border-b'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4'>
-          <div className='flex flex-col sm:flex-row gap-4'>
-            {/* Search */}
-            <div className='flex-1'>
-              <div className='relative'>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400' />
-                <Input
-                  placeholder='Search vendors, cuisines, or specialties...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className='pl-10'
-                />
-              </div>
+        {/* Search Section */}
+        <div className='px-6 pb-8'>
+          <div className='max-w-2xl mx-auto'>
+            <div className='relative group'>
+              <Search className='absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 group-hover:text-purple-400 transition-colors duration-300' />
+              <Input
+                type='text'
+                placeholder='Search vendors, cuisines, or specialties...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='w-full pl-16 pr-6 py-6 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/15'
+              />
             </div>
+          </div>
+        </div>
 
+        {/* Filters */}
+        <div className='px-6 pb-8'>
+          <div className='max-w-4xl mx-auto flex flex-col sm:flex-row gap-4 justify-center'>
             {/* Cuisine Filter */}
             <Select value={selectedCuisine} onValueChange={setSelectedCuisine}>
-              <SelectTrigger className='w-full sm:w-48'>
+              <SelectTrigger className='w-full sm:w-48 bg-white/10 backdrop-blur-xl border-white/20 text-white'>
                 <Filter className='h-4 w-4 mr-2' />
                 <SelectValue placeholder='Cuisine' />
               </SelectTrigger>
@@ -361,7 +546,7 @@ export default function CampusStorePage() {
             <Select
               value={selectedPriceRange}
               onValueChange={setSelectedPriceRange}>
-              <SelectTrigger className='w-full sm:w-48'>
+              <SelectTrigger className='w-full sm:w-48 bg-white/10 backdrop-blur-xl border-white/20 text-white'>
                 <SelectValue placeholder='Price Range' />
               </SelectTrigger>
               <SelectContent>
@@ -376,124 +561,11 @@ export default function CampusStorePage() {
             </Select>
           </div>
         </div>
-      </div>
 
-      {/* Vendors Grid */}
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        {isLoading ? (
-          <div className='flex items-center justify-center py-12'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            <span className='ml-2 text-lg'>Loading vendors...</span>
-          </div>
-        ) : filteredVendors.length === 0 ? (
-          <div className='text-center py-12'>
-            <Store className='h-12 w-12 text-gray-400 mx-auto mb-4' />
-            <h3 className='text-lg font-medium text-gray-900 mb-2'>
-              No vendors found
-            </h3>
-            <p className='text-gray-500'>
-              {searchQuery
-                ? 'Try adjusting your search terms'
-                : 'No vendors available at the moment'}
-            </p>
-          </div>
-        ) : (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {filteredVendors.map((vendor) => (
-              <Card
-                key={vendor.id}
-                className='hover:shadow-lg transition-shadow'>
-                <CardHeader className='pb-3'>
-                  <div className='relative aspect-video overflow-hidden rounded-lg'>
-                    <img
-                      src={vendor.image}
-                      alt={vendor.name}
-                      className='w-full h-full object-cover'
-                    />
-                    {!vendor.isOpen && (
-                      <div className='absolute inset-0 bg-black/50 flex items-center justify-center'>
-                        <Badge variant='destructive'>Closed</Badge>
-                      </div>
-                    )}
-                    <div className='absolute top-2 right-2'>
-                      <Badge className={getPriceRangeColor(vendor.priceRange)}>
-                        {vendor.priceRange}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent>
-                  <div className='flex items-start justify-between mb-2'>
-                    <h3 className='font-semibold text-xl line-clamp-1'>
-                      {vendor.name}
-                    </h3>
-                    <div className='flex items-center gap-1'>
-                      <Star className='h-4 w-4 text-yellow-500 fill-current' />
-                      <span className='text-sm font-medium'>
-                        {vendor.rating}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className='text-sm text-gray-600 line-clamp-2 mb-3'>
-                    {vendor.description}
-                  </p>
-
-                  <div className='flex items-center gap-2 mb-3'>
-                    <MapPin className='h-4 w-4 text-gray-400' />
-                    <span className='text-sm text-gray-600'>
-                      {vendor.location}
-                    </span>
-                  </div>
-
-                  <div className='flex items-center gap-2 mb-3'>
-                    <Clock className='h-4 w-4 text-gray-400' />
-                    <span className='text-sm text-gray-600'>
-                      {vendor.operatingHours}
-                    </span>
-                  </div>
-
-                  <div className='mb-4'>
-                    <p className='text-sm font-medium text-gray-700 mb-1'>
-                      Specialties:
-                    </p>
-                    <div className='flex flex-wrap gap-1'>
-                      {vendor.specialties
-                        .slice(0, 3)
-                        .map((specialty, index) => (
-                          <Badge
-                            key={index}
-                            variant='outline'
-                            className='text-xs'>
-                            {specialty}
-                          </Badge>
-                        ))}
-                      {vendor.specialties.length > 3 && (
-                        <Badge variant='outline' className='text-xs'>
-                          +{vendor.specialties.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className='flex items-center gap-2'>
-                    <Button
-                      onClick={() => handleOrderNow(vendor)}
-                      disabled={!vendor.isOpen}
-                      className='flex-1'>
-                      <ExternalLink className='h-4 w-4 mr-2' />
-                      {vendor.isOpen ? 'Order Now' : 'Currently Closed'}
-                    </Button>
-                    <Button variant='outline' size='sm'>
-                      <Phone className='h-4 w-4' />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        {/* Vendors Grid */}
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+          {renderVendorsContent()}
+        </div>
       </div>
     </div>
   );

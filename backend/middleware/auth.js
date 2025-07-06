@@ -1,29 +1,34 @@
 const jwt = require("jsonwebtoken");
-const user = require("../models/User.js");
-exports.isAuthenticated = async (req, res, next) => {
+const User = require("../models/User");
+require('dotenv').config({ path: './config/config.env' });
+
+// Middleware to protect routes
+exports.protect = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-       const token = req.cookies.token;
-       console.log(token);
-       if(token=="j:null"){
-            return res.status(401).json({
-                success:false,
-                message:"Not logged in currently"
-            })
-       }
-       const decodedData= jwt.verify(token, process.env.JWT_SECRET);
-       const user1=await user.findOne({email: decodedData.email})
-       if(!user1){
-        return res.status(401).json({
-            success:false,
-            message:"Not logged in currently"
-        })
-       }
-       req.user=user1;
-       next(); 
+      // Get token from header
+      token = req.headers.authorization.split(' ')[1];
+
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Get user from the token
+      req.user = await User.findById(decoded.id).select('-password');
+
+      if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized, user not found' });
+      }
+
+      next();
     } catch (error) {
-       res.status(500).json({
-          success: false,
-          message: `Internal server errorrrrrr: ${error}`,
-       });
+      console.error(error);
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
- };
+  }
+
+  if (!token) {
+    res.status(401).json({ message: 'Not authorized, no token' });
+  }
+};

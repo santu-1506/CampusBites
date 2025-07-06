@@ -54,7 +54,7 @@ exports.registerUser = async (req, res) => {
     sendEmailVerificationOTP(req, user);
 
     const token = JWT.sign(
-      { id: user._id, email: user.email, role: user.role },
+      { id: user._id, email: user.email, name: user.name, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "200h" }
     );
@@ -164,7 +164,12 @@ exports.loginUser = async (req, res, next) => {
             });
         }
 
-        const token = JWT.sign({ id: user1._id, email: user1.email }, process.env.JWT_SECRET, { expiresIn: '120h' });
+        const token = JWT.sign({ 
+            id: user1._id, 
+            email: user1.email, 
+            name: user1.name, 
+            role: user1.role 
+        }, process.env.JWT_SECRET, { expiresIn: '120h' });
         const option = {
             httpOnly: false,
             secure: true,  
@@ -259,26 +264,16 @@ exports.forgotPass = async (req, res, next) => {
     }
 };
 
-exports.loadUser=async(req, res, next)=>{
-    try{
-        const user1=req.user;
-        if(!user1){
-            return res.status(400).json({
-                success:false,
-                message:"Currently not logged in"
-            })
-        }
-        return res.status(200).json({
-            success:true,
-            user1
-        })
-    }catch(error){
-        return res.status(500).json({
-            success:false,
-            message:"Internal sever error", error
-        })
-    }
-}
+// @desc    Get user profile
+// @route   GET /api/me
+// @access  Private
+exports.loadUser = async (req, res) => {
+    // req.user is set by the protect middleware
+    res.status(200).json({
+        success: true,
+        user: req.user,
+    });
+};
 
 exports.resetPassword= async(req, res)=>{
     try{

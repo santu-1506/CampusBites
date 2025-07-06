@@ -1,4 +1,5 @@
 const Canteen = require("../models/Canteen");
+const Campus = require("../models/Campus");
 const cloudinary = require("../utils/cloudinary");
 
 // Create Canteen with image support
@@ -43,16 +44,36 @@ exports.getAllCanteens = async (req, res) => {
         const { campus } = req.query;
 
         // Filter: if campus is passed, filter by campus ID
-        const filter = { isDeleted: false };
+        // Use $ne: true to include canteens where isDeleted is false, null, or undefined
+        const filter = { isDeleted: { $ne: true } };
         if (campus) {
         filter.campus = campus; // campus should be ObjectId
         }
 
+        console.log("🔍 Fetching canteens with filter:", filter);
+        
         const canteens = await Canteen.find(filter)
-        .populate("campus", "name code city") // optional: include campus info
+        .populate({
+            path: "campus",
+            select: "name code city",
+            strictPopulate: false // Don't fail if campus is null/invalid
+        })
         .select("-__v");
 
-        res.status(200).json({ canteens });
+        console.log("📋 Found canteens:", canteens.length);
+        console.log("🏢 Canteen names:", canteens.map(c => c.name));
+
+        // Transform data to match frontend expectations
+        const transformedCanteens = canteens.map(canteen => ({
+            ...canteen.toObject(),
+            image: canteen.images?.[0] || '/placeholder.jpg' // Use first image as main image
+        }));
+
+        res.status(200).json({ 
+            success: true,
+            data: transformedCanteens,
+            count: transformedCanteens.length
+        });
     } catch (err) {
         console.error("Error fetching canteens:", err);
         res.status(500).json({ message: "Internal server error" });
@@ -126,13 +147,26 @@ exports.getCanteenById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const canteen = await Canteen.findOne({ _id: id, isDeleted: false }).populate("campus");
+        const canteen = await Canteen.findOne({ 
+            _id: id, 
+            isDeleted: { $ne: true } // Use same filter as getAllCanteens
+        }).populate({
+            path: "campus",
+            select: "name code city",
+            strictPopulate: false
+        });
 
         if (!canteen) {
         return res.status(404).json({ message: "Canteen not found" });
         }
 
-        res.status(200).json({ canteen });
+        // Transform data to match frontend expectations (add image field)
+        const transformedCanteen = {
+            ...canteen.toObject(),
+            image: canteen.images?.[0] || '/placeholder.jpg'
+        };
+
+        res.status(200).json({ canteen: transformedCanteen });
     } catch (error) {
         console.error("Fetch Canteen Error:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });

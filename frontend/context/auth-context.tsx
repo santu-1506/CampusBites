@@ -44,49 +44,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
-    // This needs to be implemented to call the backend and get a token
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        if (email && password) {
-          const user = {
-            id: "user_123",
-            name: "John Doe",
-            email: email,
-            role: "student"
-          }
-          const fakeToken = "fake-jwt-token";
-          setUser(user)
-          setToken(fakeToken);
-          localStorage.setItem("token", fakeToken)
-          resolve()
-        } else {
-          reject(new Error("Invalid credentials"))
-        }
-      }, 1000)
-    })
+    try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      if (data.success && data.token) {
+        const decoded = jwtDecode<User>(data.token);
+        setUser(decoded);
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   }, [])
 
   const register = useCallback(async (name: string, email: string, password: string) => {
-    // This needs to be implemented to call the backend and get a token
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        if (name && email && password) {
-          const user = {
-            id: "user_" + Math.random().toString(36).substr(2, 9),
-            name: name,
-            email: email,
-            role: "student"
-          }
-          const fakeToken = "fake-jwt-token-register";
-          setUser(user)
-          setToken(fakeToken);
-          localStorage.setItem("token", fakeToken)
-          resolve()
-        } else {
-          reject(new Error("Invalid registration data"))
-        }
-      }, 1000)
-    })
+    try {
+      const response = await fetch('/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          name, 
+          email, 
+          password, 
+          role: 'student',
+          campus: 'Main Campus' // You might want to make this dynamic
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      if (data.success && data.token) {
+        const decoded = jwtDecode<User>(data.token);
+        setUser(decoded);
+        setToken(data.token);
+        localStorage.setItem("token", data.token);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   }, [])
 
   const loginWithToken = useCallback((token: string) => {

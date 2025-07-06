@@ -9,6 +9,7 @@ import { useCart } from "@/context/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 import Image from "next/image"
 import { Trash2, Plus, Minus, ArrowLeft, MapPin, Clock, Gift, Loader2 } from "lucide-react"
+import { useAuth } from "@/context/auth-context"
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart()
@@ -18,6 +19,7 @@ export default function CartPage() {
   const [isApplyingPromo, setIsApplyingPromo] = useState(false)
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
   const [discount, setDiscount] = useState(0)
+  const { isAuthenticated } = useAuth()
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity > 0) {
@@ -65,8 +67,14 @@ export default function CartPage() {
       // Calculate final total with discount and delivery fee
       const finalTotal = totalPrice - discount + 25;
       
-      // Redirect to payment page with order total
-      router.push(`/payment?total=${finalTotal.toFixed(2)}`);
+      // If not logged in, redirect to login first with redirect param
+      if (!isAuthenticated) {
+        const redirectUrl = encodeURIComponent(`/payment?total=${finalTotal.toFixed(2)}`)
+        router.push(`/login?redirect=${redirectUrl}`)
+        return
+      }
+
+      router.push(`/payment?total=${finalTotal.toFixed(2)}`)
     } catch (error) {
       console.error(error);
       toast({

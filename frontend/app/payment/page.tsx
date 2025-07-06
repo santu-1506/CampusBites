@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { useCart } from "@/context/cart-context"
+import { useAuth } from "@/context/auth-context"
 import { ArrowLeft, CreditCard, Smartphone, Truck, Loader2, Shield, CheckCircle } from "lucide-react"
 import Image from "next/image"
 
@@ -33,6 +34,7 @@ export default function PaymentPage() {
   const searchParams = useSearchParams()
   const { cart, clearCart, totalPrice } = useCart()
   const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
 
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("cod")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -50,6 +52,13 @@ export default function PaymentPage() {
   const [holderName, setHolderName] = useState("")
 
   useEffect(() => {
+    // Auth guard
+    if (!isAuthenticated) {
+      const redirect = encodeURIComponent(window.location.pathname + window.location.search)
+      router.replace(`/login?redirect=${redirect}`)
+      return
+    }
+
     // Get order total from URL params or calculate from cart
     const total = searchParams.get('total')
     setOrderTotal(total ? parseFloat(total) : totalPrice + 25)
@@ -164,8 +173,6 @@ export default function PaymentPage() {
         paidAt: paymentData.method !== "cod" ? new Date().toISOString() : null
       }
     }
-
-
 
     const response = await fetch('/api/v1/orders', {
       method: 'POST',

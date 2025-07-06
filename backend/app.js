@@ -5,12 +5,14 @@ const dotenv = require("dotenv");
 const userRoutes = require("./routes/userRoutes");
 const canteenRoutes = require("./routes/canteenRoutes");
 const campusRoutes = require("./routes/campusRoutes");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // API routes
 app.use("/api/users", userRoutes);

@@ -42,10 +42,20 @@ export default function LoginPage() {
 
   const selectedRole = form.watch("role")
 
-  // Handle OAuth token from URL
+  // Handle OAuth token from URL and show session expiration message
   useEffect(() => {
     const token = searchParams.get('token')
     const redirect = searchParams.get('redirect')
+    const message = searchParams.get('message')
+    
+    if (message) {
+      toast({
+        variant: "destructive",
+        title: "Session Expired",
+        description: message,
+      })
+    }
+    
     if (token) {
       loginWithToken(token)
       // Clean up URL and navigate
@@ -55,7 +65,7 @@ export default function LoginPage() {
         router.replace('/')
       }
     }
-  }, [searchParams, loginWithToken, router])
+  }, [searchParams, loginWithToken, router, toast])
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsLoading(true)
@@ -219,7 +229,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Form {...form}>
+                        <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {/* Role Selection */}
             <FormField
@@ -230,7 +240,10 @@ export default function LoginPage() {
                           <FormLabel className="text-gray-300 text-lg font-semibold">I am a</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                              <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                              <SelectTrigger 
+                                suppressHydrationWarning 
+                                className="bg-gray-700/50 border-gray-600 text-white rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                              >
                                 <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                     </FormControl>
@@ -264,6 +277,7 @@ export default function LoginPage() {
                             <div className="relative">
                               <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
                     <Input
+                                suppressHydrationWarning
                                 placeholder="Enter your email"
                                 type="email"
                                 autoComplete="email"
@@ -295,6 +309,7 @@ export default function LoginPage() {
                             <div className="relative">
                               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
                       <Input
+                                suppressHydrationWarning
                                 placeholder="Enter your password"
                                 type={showPassword ? "text" : "password"}
                                 autoComplete="current-password"
@@ -302,6 +317,7 @@ export default function LoginPage() {
                         {...field}
                       />
                       <button
+                                suppressHydrationWarning
                                 type="button"
                         onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
@@ -316,6 +332,7 @@ export default function LoginPage() {
             />
 
             <Button
+                      suppressHydrationWarning
                       type="submit"
               disabled={isLoading}
                       className={`w-full ${selectedRole ? `bg-gradient-to-r ${getRoleColor(selectedRole)}` : "bg-gradient-to-r from-orange-500 to-red-500"} hover:scale-105 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg text-lg group`}
@@ -351,6 +368,7 @@ export default function LoginPage() {
             </div>
 
             <Button
+                      suppressHydrationWarning
                       type="button"
                       variant="outline"
                       className="w-full bg-transparent border-gray-600 hover:bg-gray-700/50 text-white rounded-xl h-14 text-lg"
@@ -373,6 +391,7 @@ export default function LoginPage() {
                     <h3 className="text-white font-semibold mb-2">Want to partner with us?</h3>
                     <p className="text-gray-400 text-sm mb-4">Join as a campus restaurant partner</p>
                     <Button
+                      suppressHydrationWarning
                       asChild
                       variant="outline"
                       className="border-green-500/50 text-green-400 hover:bg-green-500/10 hover:text-green-300 transition-all duration-300 bg-transparent"

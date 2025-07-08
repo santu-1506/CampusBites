@@ -1,19 +1,4 @@
-const mongoose = require("mongoose");
-
-// Create a Menu model based on what I see in the database
-const MenuSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    price: { type: Number, required: true },
-    description: { type: String, default: "" },
-    category: { type: String, default: "General" },
-    canteen: { type: mongoose.Schema.Types.ObjectId, ref: "Canteen", required: true },
-    isVeg: { type: Boolean, default: true },
-    image: { type: String, default: "" },
-    available: { type: Boolean, default: true },
-    __v: { type: Number, default: 0 }
-}, { timestamps: true });
-
-const Menu = mongoose.model("Menu", MenuSchema);
+const Menu = require('../models/Menu');
 
 // Get menu items by canteen ID
 exports.getMenuByCanteenId = async (req, res) => {

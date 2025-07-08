@@ -1,3 +1,17 @@
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  bio?: string;
+  address?: string;
+  dateOfBirth?: string;
+  role: "student" | "campus_store" | "admin";
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Canteen {
   _id: string;
   name: string;
@@ -59,6 +73,6 @@ export interface Order {
     };
     paidAt?: string;
   };
-  placedAt: string;
+  createdAt: string;
   updatedAt: string;
 }

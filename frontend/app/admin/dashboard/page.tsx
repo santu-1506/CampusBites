@@ -1,507 +1,488 @@
 "use client"
-import React, { useState } from 'react';
-import { Users, Store, BarChart3, Settings, Search, Filter, Eye, Check, X, TrendingUp, DollarSign, ShoppingBag, UserCheck, Menu, Bell, MapPin } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, Legend } from 'recharts';
 
-const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/hooks/use-toast"
+import { CheckCircle, XCircle, Clock, Store, Mail, Phone, MapPin, FileText, Users, TrendingUp } from "lucide-react"
+import { Line, Pie, Bar } from "react-chartjs-2"
 
-  // Mock data
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@student.uni.edu', role: 'Student', status: 'active', joinDate: '2024-01-15', orders: 24 },
-    { id: 2, name: 'Sarah Wilson', email: 'sarah@student.uni.edu', role: 'Student', status: 'active', joinDate: '2024-02-20', orders: 18 },
-    { id: 3, name: 'Mike Johnson', email: 'mike@student.uni.edu', role: 'Student', status: 'inactive', joinDate: '2024-01-10', orders: 5 },
-    { id: 4, name: 'Emily Chen', email: 'emily@student.uni.edu', role: 'Student', status: 'active', joinDate: '2024-03-01', orders: 31 },
-    { id: 5, name: 'David Brown', email: 'david@student.uni.edu', role: 'Student', status: 'active', joinDate: '2024-02-15', orders: 12 }
-  ];
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement, // <-- add this
+  ArcElement, // <-- add this for Pie charts
+  ChartOptions,
+} from "chart.js"
+// @ts-ignore
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, ArcElement, ChartDataLabels)
 
-  const vendors = [
-    { id: 1, name: 'EI Block Canteen', email: 'eiblock@campus.edu', status: 'pending', rating: 4.5, orders: 156, joinDate: '2024-03-15' },
-    { id: 2, name: 'Main Campus Cafe', email: 'maincafe@campus.edu', status: 'approved', rating: 4.2, orders: 203, joinDate: '2024-02-10' },
-    { id: 3, name: 'Quick Bites Corner', email: 'quickbites@campus.edu', status: 'approved', rating: 4.7, orders: 89, joinDate: '2024-03-20' },
-    { id: 4, name: 'Healthy Eats', email: 'healthy@campus.edu', status: 'pending', rating: 4.3, orders: 67, joinDate: '2024-03-25' },
-    { id: 5, name: 'Midnight Snacks', email: 'midnight@campus.edu', status: 'blocked', rating: 3.8, orders: 45, joinDate: '2024-01-30' }
-  ];
+interface PendingRequest {
+  id: string
+  restaurantName: string
+  ownerName: string
+  email: string
+  phone: string
+  address: string
+  description: string
+  operatingHours: string
+  cuisineType: string
+  submittedAt: string
+  status: "pending" | "approved" | "rejected"
+}
 
-  const analytics = {
-    totalUsers: 1247,
-    totalVendors: 23,
-    totalOrders: 5632,
-    revenue: 89450,
-    dailyOrders: [
-      { day: 'Mon', orders: 45 },
-      { day: 'Tue', orders: 52 },
-      { day: 'Wed', orders: 61 },
-      { day: 'Thu', orders: 58 },
-      { day: 'Fri', orders: 87 },
-      { day: 'Sat', orders: 42 },
-      { day: 'Sun', orders: 38 }
+export default function AdminDashboard() {
+  const { toast } = useToast()
+  const [summary, setSummary] = useState<any>(null)
+  const [usersMonthly, setUsersMonthly] = useState<any[]>([])
+  const [ordersMonthly, setOrdersMonthly] = useState<any[]>([])
+  const [revenueDaily, setRevenueDaily] = useState<any[]>([])
+  const [revenueWeekly, setRevenueWeekly] = useState<any[]>([])
+  const [revenueMonthly, setRevenueMonthly] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [orderStatus, setOrderStatus] = useState<any>(null)
+  const [userRoles, setUserRoles] = useState<any>(null)
+  const [topSpenders, setTopSpenders] = useState<any[]>([])
+  const [topCanteens, setTopCanteens] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      setError(null)
+      try {
+        // Use only the correct endpoints as provided
+        const [summaryRes, usersRes, userRolesRes, topSpendersRes, ordersRes, orderStatusRes, topCanteensRes, revenueTotalRes, revenueByCampusCanteenRes, revenueTopCanteensRes, revenueTopCampusesRes, revenuePaymentBreakdownRes, revenueDailyRes, revenueWeeklyRes, revenueMonthlyRes] = await Promise.all([
+          fetch("/api/v1/admin/totals"),
+          fetch("/api/v1/admin/users/monthly"),
+          fetch("/api/v1/admin/users/count-by-role"),
+          fetch("/api/v1/admin/users/top-spenders"),
+          fetch("/api/v1/admin/orders/monthly"),
+          fetch("/api/v1/admin/orders/status-wise"),
+          fetch("/api/v1/admin/orders/top-tcanteens"),
+          fetch("/api/v1/admin/revenue/total"),
+          fetch("/api/v1/admin/revenue/by-campus-canteen"),
+          fetch("/api/v1/admin/revenue/top-canteens"),
+          fetch("/api/v1/admin/revenue/top-campuses"),
+          fetch("/api/v1/admin/revenue/payment-breakdown"),
+          fetch("/api/v1/admin/revenue/daily"),
+          fetch("/api/v1/admin/revenue/weekly"),
+          fetch("/api/v1/admin/revenue/monthly"),
+        ])
+        if (!summaryRes.ok || !usersRes.ok || !userRolesRes.ok || !topSpendersRes.ok || !ordersRes.ok || !orderStatusRes.ok || !topCanteensRes.ok || !revenueTotalRes.ok || !revenueByCampusCanteenRes.ok || !revenueTopCanteensRes.ok || !revenueTopCampusesRes.ok || !revenuePaymentBreakdownRes.ok || !revenueDailyRes.ok || !revenueWeeklyRes.ok || !revenueMonthlyRes.ok) {
+          throw new Error("API error")
+        }
+        const [summaryData, usersData, userRolesData, topSpendersData, ordersData, orderStatusData, topCanteensData, revenueTotalData, revenueByCampusCanteenData, revenueTopCanteensData, revenueTopCampusesData, revenuePaymentBreakdownData, revenueDailyData, revenueWeeklyData, revenueMonthlyData] = await Promise.all([
+          summaryRes.json(),
+          usersRes.json(),
+          userRolesRes.json(),
+          topSpendersRes.json(),
+          ordersRes.json(),
+          orderStatusRes.json(),
+          topCanteensRes.json(),
+          revenueTotalRes.json(),
+          revenueByCampusCanteenRes.json(),
+          revenueTopCanteensRes.json(),
+          revenueTopCampusesRes.json(),
+          revenuePaymentBreakdownRes.json(),
+          revenueDailyRes.json(),
+          revenueWeeklyRes.json(),
+          revenueMonthlyRes.json(),
+        ])
+        setSummary(summaryData)
+        setUsersMonthly(usersData)
+        // Transform userRolesData array to object: [{_id: 'student', count: 5}] => {student: 5}
+        const userRolesObj: Record<string, number> = {}
+        userRolesData.forEach((item: any) => { userRolesObj[item._id] = item.count })
+        setUserRoles(userRolesObj)
+        setTopSpenders(topSpendersData)
+        setOrdersMonthly(ordersData)
+        // Transform orderStatusData array to object: [{_id: 'completed', count: 10}] => {completed: 10}
+        const orderStatusObj: Record<string, number> = {}
+        orderStatusData.forEach((item: any) => { orderStatusObj[item._id] = item.count })
+        setOrderStatus(orderStatusObj)
+        setTopCanteens(topCanteensData)
+        setRevenueDaily(revenueDailyData)
+        setRevenueWeekly(revenueWeeklyData)
+        setRevenueMonthly(revenueMonthlyData)
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Remove handleApprove and handleReject
+  // Remove formatDate if not used elsewhere
+
+  // Remove pendingCount, approvedCount, rejectedCount, and pendingRequests.length usages
+  // Instead, use summary data for the cards
+
+  // Chart data helpers (fix field names)
+  const usersChartData = {
+    labels: usersMonthly.map((u) => u._id),
+    datasets: [
+      {
+        label: "New Users",
+        data: usersMonthly.map((u) => u.count),
+        borderColor: "#f87171",
+        backgroundColor: "#f87171",
+      },
     ],
-    revenueData: [
-      { month: 'Jan', revenue: 12000 },
-      { month: 'Feb', revenue: 18000 },
-      { month: 'Mar', revenue: 25000 },
-      { month: 'Apr', revenue: 32000 },
-      { month: 'May', revenue: 28000 },
-      { month: 'Jun', revenue: 35000 }
+  }
+  const ordersChartData = {
+    labels: ordersMonthly.map((o) => o._id),
+    datasets: [
+      {
+        label: "Orders",
+        data: ordersMonthly.map((o) => o.count),
+        borderColor: "#60a5fa",
+        backgroundColor: "#60a5fa",
+      },
     ],
-    userGrowth: [
-      { month: 'Jan', users: 120 },
-      { month: 'Feb', users: 180 },
-      { month: 'Mar', users: 250 },
-      { month: 'Apr', users: 340 },
-      { month: 'May', users: 420 },
-      { month: 'Jun', users: 520 }
+  }
+  const revenueChartData = {
+    labels: revenueMonthly.map((r) => r._id),
+    datasets: [
+      {
+        label: "Revenue",
+        data: revenueMonthly.map((r) => r.revenue || r.total || r.totalAmount),
+        borderColor: "#34d399",
+        backgroundColor: "#34d399",
+      },
     ],
-    topCategories: [
-      { name: 'Burgers', value: 35, color: '#ef4444' },
-      { name: 'Pizza', value: 25, color: '#f97316' },
-      { name: 'Indian', value: 20, color: '#eab308' },
-      { name: 'Chinese', value: 12, color: '#22c55e' },
-      { name: 'Beverages', value: 8, color: '#3b82f6' }
-    ]
-  };
+  }
 
-  const handleVendorAction = (vendorId: string, action: string) => {
-    console.log(`${action} vendor ${vendorId}`);
-  };
+  // New chart data helpers
+  const orderStatusChartData = orderStatus
+    ? {
+        labels: Object.keys(orderStatus),
+        datasets: [
+          {
+            label: "Order Status",
+            data: Object.values(orderStatus),
+            backgroundColor: ["#fbbf24", "#34d399", "#f87171", "#a78bfa"],
+            borderColor: ["#f59e42", "#059669", "#ef4444", "#7c3aed"],
+            borderWidth: 1,
+          },
+        ],
+      }
+    : { labels: [], datasets: [] }
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
-  const filteredVendors = vendors.filter(vendor => {
-    const matchesSearch = vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vendor.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || vendor.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
+  const userRolesChartData = userRoles
+    ? {
+        labels: Object.keys(userRoles),
+        datasets: [
+          {
+            label: "User Roles",
+            data: Object.values(userRoles),
+            backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa"],
+            borderColor: ["#ef4444", "#2563eb", "#059669", "#f59e42", "#7c3aed"],
+            borderWidth: 1,
+          },
+        ],
+      }
+    : { labels: [], datasets: [] }
 
-  const sidebarItems = [
-    { id: 'analytics', icon: BarChart3, label: 'Analytics', color: 'text-red-500' },
-    { id: 'users', icon: Users, label: 'Users', color: 'text-red-500' },
-    { id: 'vendors', icon: Store, label: 'Vendors', color: 'text-red-500' }
-  ];
+  const revenueDailyChartData = {
+    labels: revenueDaily.map((r) => r._id || r.date),
+    datasets: [
+      {
+        label: "Daily Revenue",
+        data: revenueDaily.map((r) => r.revenue || r.total || r.totalAmount),
+        borderColor: "#fbbf24",
+        backgroundColor: "#fde68a",
+      },
+    ],
+  }
+  const revenueWeeklyChartData = {
+    labels: revenueWeekly.map((r) => r._id || r.week),
+    datasets: [
+      {
+        label: "Weekly Revenue",
+        data: revenueWeekly.map((r) => r.revenue || r.total || r.totalAmount),
+        borderColor: "#60a5fa",
+        backgroundColor: "#bae6fd",
+      },
+    ],
+  }
+  const revenueMonthlyChartData = {
+    labels: revenueMonthly.map((r) => r._id || r.month),
+    datasets: [
+      {
+        label: "Monthly Revenue",
+        data: revenueMonthly.map((r) => r.revenue || r.total || r.totalAmount),
+        borderColor: "#34d399",
+        backgroundColor: "#bbf7d0",
+      },
+    ],
+  }
+  const topSpendersChartData = {
+    labels: topSpenders.map((u) => u.name || u.username || u.email),
+    datasets: [
+      {
+        label: "Amount Spent",
+        data: topSpenders.map((u) => u.amount || u.totalSpent),
+        backgroundColor: "#a78bfa",
+        borderColor: "#7c3aed",
+        borderWidth: 1,
+      },
+    ],
+  }
+  // Top Canteens by Order Volume chart data with red and white colors and percentage display
+  const totalCanteenOrders = topCanteens.reduce((sum: number, c: any) => sum + (c.totalOrders || c.count || c.orderCount || 0), 0);
+  const topCanteensChartData = {
+    labels: topCanteens.map((c) => c.name || c.canteenName),
+    datasets: [
+      {
+        label: "Order Volume (%)",
+        data: topCanteens.map((c) => {
+          const value = c.totalOrders || c.count || c.orderCount || 0;
+          return totalCanteenOrders > 0 ? (value / totalCanteenOrders) * 100 : 0;
+        }),
+        backgroundColor: "#ef4444", // red
+        borderColor: "#fff", // white border
+        borderWidth: 2,
+      },
+    ],
+  }
 
-  const StatCard = ({ title, value, icon: Icon, trend, color = "text-red-500" }: { title: string; value: string; icon: any; trend?: string; color?: string }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-2xl bg-red-50`}>
-          <Icon className={`w-6 h-6 ${color}`} />
-        </div>
-        {trend && (
-          <div className="flex items-center text-green-500 text-sm font-medium">
-            <TrendingUp className="w-4 h-4 mr-1" />
-            {trend}
-          </div>
-        )}
-      </div>
-      <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
-      <div className="text-sm text-gray-500">{title}</div>
-    </div>
-  );
-
-  const UserCard = ({ user }: { user: any }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-            <span className="text-red-500 font-semibold text-lg">
-              {user.name.charAt(0)}
-            </span>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">{user.name}</h3>
-            <p className="text-sm text-gray-500">{user.email}</p>
-          </div>
-        </div>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-          user.status === 'active' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-        }`}>
-          {user.status}
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <span className="text-gray-500">Role:</span>
-          <span className="ml-2 font-medium">{user.role}</span>
-        </div>
-        <div>
-          <span className="text-gray-500">Orders:</span>
-          <span className="ml-2 font-medium">{user.orders}</span>
-        </div>
-        <div className="col-span-2">
-          <span className="text-gray-500">Joined:</span>
-          <span className="ml-2 font-medium">{new Date(user.joinDate).toLocaleDateString()}</span>
-        </div>
-      </div>
-    </div>
-  );
-
-  const VendorCard = ({ vendor }: { vendor: any }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-            <Store className="w-6 h-6 text-red-500" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">{vendor.name}</h3>
-            <p className="text-sm text-gray-500">{vendor.email}</p>
-          </div>
-        </div>
-        <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-          vendor.status === 'approved' ? 'bg-green-100 text-green-600' :
-          vendor.status === 'pending' ? 'bg-yellow-100 text-yellow-600' :
-          'bg-red-100 text-red-600'
-        }`}>
-          {vendor.status}
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-        <div>
-          <span className="text-gray-500">Rating:</span>
-          <span className="ml-2 font-medium">{vendor.rating}⭐</span>
-        </div>
-        <div>
-          <span className="text-gray-500">Orders:</span>
-          <span className="ml-2 font-medium">{vendor.orders}</span>
-        </div>
-      </div>
-
-      {vendor.status === 'pending' && (
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => handleVendorAction(vendor.id, 'approve')}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-2xl font-medium transition-colors flex items-center justify-center"
-          >
-            <Check className="w-4 h-4 mr-2" />
-            Approve
-          </button>
-          <button
-            onClick={() => handleVendorAction(vendor.id, 'reject')}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-2xl font-medium transition-colors flex items-center justify-center"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Reject
-          </button>
-        </div>
-      )}
-      
-      {vendor.status === 'approved' && (
-        <div className="mt-4">
-          <button
-            onClick={() => handleVendorAction(vendor.id, 'block')}
-            className="w-full bg-red-100 hover:bg-red-200 text-red-600 py-2 px-4 rounded-2xl font-medium transition-colors flex items-center justify-center"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Block Vendor
-          </button>
-        </div>
-      )}
-    </div>
-  );
+  const topCanteensChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        color: '#fff',
+        anchor: 'end',
+        align: 'center', // changed from 'end' to 'center' for compatibility
+        font: { weight: 'bold', size: 14 },
+        formatter: (value: number) => value ? value.toFixed(1) + '%' : '',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            return context.parsed.y.toFixed(1) + '%';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#fff', font: { weight: 'bold' as const } },
+        grid: { color: 'rgba(255,255,255,0.1)' },
+      },
+      y: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          color: '#fff',
+          callback: function(tickValue: string | number) { return tickValue + '%'; },
+        },
+        grid: { color: 'rgba(255,255,255,0.1)' },
+      },
+    },
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-100">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 rounded-xl hover:bg-gray-100 mr-3"
-            >
-              <Menu className="w-6 h-6 text-gray-600" />
-            </button>
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-red-500 rounded-xl flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">CB</span>
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">CampusBites Admin</h1>
+    <div className="min-h-screen bg-black p-6">
+      {/* Background Elements */}
+      {/* No gradients or floating backgrounds for a clean look */}
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 bg-[#ef4444] rounded-2xl flex items-center justify-center">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
+              <p className="text-lg text-white">Manage campus restaurant applications</p>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center text-sm text-gray-500">
-              <MapPin className="w-4 h-4 mr-1" />
-              VIT Campus, LHR
-            </div>
-            <button className="p-2 rounded-xl hover:bg-gray-100 relative">
-              <Bell className="w-5 h-5 text-gray-600" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-            </button>
-            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-              <span className="text-red-500 font-semibold text-sm">A</span>
-            </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Pending</p>
+                    <p className="text-2xl font-bold text-white">{pendingCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Approved</p>
+                    <p className="text-2xl font-bold text-white">{approvedCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-400 to-pink-500 rounded-xl flex items-center justify-center">
+                    <XCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Rejected</p>
+                    <p className="text-2xl font-bold text-white">{rejectedCount}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Total</p>
+                    <p className="text-2xl font-bold text-white">{pendingRequests.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </div>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <div className="w-64 bg-white shadow-lg border-r border-gray-100 min-h-[calc(100vh-72px)] hidden lg:block">
-          <div className="flex flex-col h-full pt-6">
-            <div className="px-6 pb-6">
-              <nav className="space-y-2">
-                {sidebarItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center px-4 py-3 text-left rounded-2xl transition-colors font-medium ${
-                      activeTab === item.id
-                        ? 'bg-red-50 text-red-600'
-                        : 'text-gray-600 hover:bg-gray-50'
+        {/* Applications List */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-white mb-6">Restaurant Applications</h2>
+
+          {pendingRequests.map((request) => (
+            <Card key={request.id} className="bg-gray-800/30 border-gray-700/30 backdrop-blur-xl">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-2xl text-white flex items-center gap-3">
+                      <Store className="w-6 h-6 text-orange-400" />
+                      {request.restaurantName}
+                    </CardTitle>
+                    <CardDescription className="text-gray-400 text-lg mt-2">
+                      Submitted by {request.ownerName} on {formatDate(request.submittedAt)}
+                    </CardDescription>
+                  </div>
+                  <Badge
+                    variant={
+                      request.status === "pending"
+                        ? "secondary"
+                        : request.status === "approved"
+                          ? "default"
+                          : "destructive"
+                    }
+                    className={`text-sm px-3 py-1 ${
+                      request.status === "pending"
+                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                        : request.status === "approved"
+                          ? "bg-green-500/20 text-green-400 border-green-500/30"
+                          : "bg-red-500/20 text-red-400 border-red-500/30"
                     }`}
                   >
-                    <item.icon className={`w-5 h-5 mr-3 ${
-                      activeTab === item.id ? 'text-red-500' : 'text-gray-500'
-                    }`} />
-                    {item.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </div>
-
-        {/* Overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {/* Search and Filter Bar */}
-          {(activeTab === 'users' || activeTab === 'vendors') && (
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
-              </div>
-              
-              {activeTab === 'vendors' && (
-                <div className="relative">
-                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="pl-10 pr-8 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="blocked">Blocked</option>
-                  </select>
+                    {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                  </Badge>
                 </div>
-              )}
-            </div>
-          )}
+              </CardHeader>
 
-          {/* Analytics Tab */}
-          {activeTab === 'analytics' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard
-                  title="Total Users"
-                  value={analytics.totalUsers.toLocaleString()}
-                  icon={Users}
-                  trend="+12%"
-                />
-                <StatCard
-                  title="Total Vendors"
-                  value={analytics.totalVendors.toString()}
-                  icon={Store}
-                  trend="+8%"
-                />
-                <StatCard
-                  title="Total Orders"
-                  value={analytics.totalOrders.toLocaleString()}
-                  icon={ShoppingBag}
-                  trend="+23%"
-                />
-                <StatCard
-                  title="Revenue"
-                  value={`₹${analytics.revenue.toLocaleString()}`}
-                  icon={DollarSign}
-                  trend="+15%"
-                />
-              </div>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Mail className="w-5 h-5 text-blue-400" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Email</p>
+                        <p className="text-white">{request.email}</p>
+                      </div>
+                    </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Weekly Orders</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={analytics.dailyOrders}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
-                        <YAxis stroke="#6b7280" fontSize={12} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                        <Bar dataKey="orders" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                    <div className="flex items-center gap-3">
+                      <Phone className="w-5 h-5 text-green-400" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Phone</p>
+                        <p className="text-white">{request.phone}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-red-400 mt-1" />
+                      <div>
+                        <p className="text-gray-400 text-sm">Address</p>
+                        <p className="text-white">{request.address}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-gray-400 text-sm mb-1">Cuisine Type</p>
+                      <Badge variant="outline" className="border-orange-500/30 text-orange-400">
+                        {request.cuisineType}
+                      </Badge>
+                    </div>
+
+                    <div>
+                      <p className="text-gray-400 text-sm">Operating Hours</p>
+                      <p className="text-white">{request.operatingHours}</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Revenue Trend</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={analytics.revenueData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
-                        <YAxis stroke="#6b7280" fontSize={12} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="revenue" 
-                          stroke="#ef4444" 
-                          strokeWidth={3}
-                          dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">User Growth</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={analytics.userGrowth}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
-                        <YAxis stroke="#6b7280" fontSize={12} />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="users" 
-                          stroke="#ef4444" 
-                          fill="#fee2e2" 
-                          strokeWidth={2}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                <div className="flex items-start gap-3">
+                  <FileText className="w-5 h-5 text-purple-400 mt-1" />
+                  <div className="flex-1">
+                    <p className="text-gray-400 text-sm mb-2">Description</p>
+                    <p className="text-white leading-relaxed">{request.description}</p>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Categories</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={analytics.topCategories}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={60}
-                          outerRadius={100}
-                          paddingAngle={5}
-                          dataKey="value"
-                        >
-                          {analytics.topCategories.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                          }}
-                        />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
+                {request.status === "pending" && (
+                  <div className="flex gap-4 pt-4 border-t border-gray-700/50">
+                    <Button
+                      onClick={() => handleApprove(request.id)}
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Approve
+                    </Button>
+                    <Button
+                      onClick={() => handleReject(request.id)}
+                      variant="outline"
+                      className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300 font-semibold px-6 py-2 rounded-xl transition-all duration-300"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Reject
+                    </Button>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Users Tab */}
-          {activeTab === 'users' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Users</h2>
-                <div className="text-sm text-gray-500">
-                  {filteredUsers.length} of {users.length} users
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredUsers.map((user) => (
-                  <UserCard key={user.id} user={user} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Vendors Tab */}
-          {activeTab === 'vendors' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Vendors</h2>
-                <div className="text-sm text-gray-500">
-                  {filteredVendors.length} of {vendors.length} vendors
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredVendors.map((vendor) => (
-                  <VendorCard key={vendor.id} vendor={vendor} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Settings Tab */}
-          {activeTab === 'settings' && (
-            <div className="flex flex-col items-center justify-center min-h-[300px]">
-              <button className="w-full max-w-xs bg-red-500 hover:bg-red-600 text-white py-3 px-6 rounded-2xl font-bold text-lg transition-colors">
-                Logout
-              </button>
-            </div>
-          )}
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>

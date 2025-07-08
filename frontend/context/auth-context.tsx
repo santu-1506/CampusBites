@@ -2,13 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { jwtDecode } from "jwt-decode";
-
-type User = {
-  id: string
-  name: string
-  email?: string
-  role: string
-}
+import { User } from "@/types"
 
 type AuthContextType = {
   user: User | null
@@ -28,10 +22,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true)
 
+  const isTokenExpired = useCallback((token: string): boolean => {
+    try {
+      const decoded = jwtDecode<any>(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch (error) {
+      return true;
+    }
+  }, []);
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token")
     if (storedToken) {
       try {
+        if (isTokenExpired(storedToken)) {
+          console.log("Token has expired, removing from storage");
+          localStorage.removeItem("token");
+          setIsLoading(false);
+          return;
+        }
+        
         const decoded = jwtDecode<User>(storedToken);
         setUser(decoded);
         setToken(storedToken);
@@ -41,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     setIsLoading(false)
-  }, [])
+  }, [isTokenExpired])
 
   const login = useCallback(async (email: string, password: string) => {
     try {
@@ -111,6 +122,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithToken = useCallback((token: string) => {
     try {
+      if (isTokenExpired(token)) {
+        console.log("Cannot login with expired token");
+        return;
+      }
+      
       const decoded = jwtDecode<User>(token);
       setUser(decoded);
       setToken(token);
@@ -118,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Failed to decode token:", error);
     }
-  }, []);
+  }, [isTokenExpired]);
 
   const logout = useCallback(() => {
     setUser(null)

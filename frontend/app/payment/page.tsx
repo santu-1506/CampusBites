@@ -13,6 +13,7 @@ import { useCart } from "@/context/cart-context"
 import { useAuth } from "@/context/auth-context"
 import { ArrowLeft, CreditCard, Smartphone, Truck, Loader2, Shield, CheckCircle } from "lucide-react"
 import Image from "next/image"
+import { createOrder } from "@/services/orderService"
 
 interface PaymentData {
   method: "cod" | "upi" | "card"
@@ -34,7 +35,7 @@ export default function PaymentPage() {
   const searchParams = useSearchParams()
   const { cart, clearCart, totalPrice } = useCart()
   const { toast } = useToast()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, token } = useAuth()
 
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("cod")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -139,14 +140,14 @@ export default function PaymentPage() {
     }
 
     const firstItemId = cart[0].id
-    const itemResponse = await fetch(`/api/v1/menu/item/${firstItemId}`)
+    const itemResponse = await fetch(`http://localhost:8080/api/menu/item/${firstItemId}`)
     let canteenId
 
     if (itemResponse.ok) {
       const itemData = await itemResponse.json()
       canteenId = itemData.data.canteen
     } else {
-      const canteensResponse = await fetch('/api/v1/canteens')
+      const canteensResponse = await fetch('http://localhost:8080/api/canteens')
       const canteensData = await canteensResponse.json()
       if (canteensData.data && canteensData.data.length > 0) {
         canteenId = canteensData.data[0]._id
@@ -162,27 +163,23 @@ export default function PaymentPage() {
       total: orderTotal,
       payment: {
         method: paymentData.method,
-        status: paymentData.method === "cod" ? "pending" : "completed",
-        transactionId: paymentData.method !== "cod" ? `TXN${Date.now()}${Math.random().toString(36).substr(2, 9)}` : null,
-        upiDetails: paymentData.upiDetails || null,
+        status: (paymentData.method === "cod" ? "pending" : "completed") as "pending" | "completed",
+        transactionId: paymentData.method !== "cod" ? `TXN${Date.now()}${Math.random().toString(36).substr(2, 9)}` : undefined,
+        upiDetails: paymentData.upiDetails || undefined,
         cardDetails: paymentData.cardDetails ? {
           lastFourDigits: paymentData.cardDetails.cardNumber.slice(-4),
           cardType: getCardType(paymentData.cardDetails.cardNumber),
           holderName: paymentData.cardDetails.holderName
-        } : null,
-        paidAt: paymentData.method !== "cod" ? new Date().toISOString() : null
+        } : undefined,
+        paidAt: paymentData.method !== "cod" ? new Date().toISOString() : undefined
       }
     }
 
-    const response = await fetch('/api/v1/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData)
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to create order')
+    if (!token) {
+      throw new Error('Authentication token not found')
     }
+
+    const response = await createOrder(orderData, token)
 
     // Success
     toast({

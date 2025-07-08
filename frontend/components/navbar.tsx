@@ -145,22 +145,22 @@ export default function Navbar() {
                       </div>
                       <div>
                         <p className="font-semibold text-white">{user?.name}</p>
-                        <p className="text-sm text-gray-400">View Profile</p>
+                        <p className="text-sm text-gray-400">{user?.email}</p>
                       </div>
                     </div>
                   </div>
                   
                   <DropdownMenuItem asChild className="mt-2 focus:bg-gray-800/80 focus:text-white">
-                    <Link href="/orders" className="flex items-center space-x-3 w-full p-2 rounded-lg text-gray-300 hover:bg-gray-800/80 hover:text-white transition-all duration-200">
-                      <Package className="h-5 w-5" />
-                      <span>My Orders</span>
+                    <Link href="/profile" className="flex items-center space-x-3 w-full p-2 rounded-lg text-gray-300 hover:bg-gray-800/80 hover:text-white transition-all duration-200">
+                      <User className="h-5 w-5" />
+                      <span>View Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem asChild className="focus:bg-gray-800/80 focus:text-white">
-                    <Link href="/favorites" className="flex items-center space-x-3 w-full p-2 rounded-lg text-gray-300 hover:bg-gray-800/80 hover:text-white transition-all duration-200">
-                      <Heart className="h-5 w-5" />
-                      <span>Favorites</span>
+                    <Link href="/orders" className="flex items-center space-x-3 w-full p-2 rounded-lg text-gray-300 hover:bg-gray-800/80 hover:text-white transition-all duration-200">
+                      <Package className="h-5 w-5" />
+                      <span>My Orders</span>
                     </Link>
                   </DropdownMenuItem>
                   

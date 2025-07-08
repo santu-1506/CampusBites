@@ -8,6 +8,7 @@ const userRoutes = require("./routes/userRoutes");
 const canteenRoutes = require("./routes/canteenRoutes");
 const campusRoutes = require("./routes/campusRoutes");
 const menuRoutes = require("./routes/menuRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const orderRoutes = require('./routes/orderRoutes');
 const cookieParser = require("cookie-parser");
 
@@ -27,6 +28,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/canteens", canteenRoutes);
 app.use("/api/campuses", campusRoutes);
 app.use("/api/menu", menuRoutes);
+app.use("/api/v1/admin", adminRoutes);
 app.use('/api/orders', orderRoutes);
 
 // Google OAuth routes

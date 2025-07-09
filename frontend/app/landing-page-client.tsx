@@ -87,7 +87,7 @@ export default function LandingPageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] text-white overflow-hidden" suppressHydrationWarning>
       {/* Professional Hero Section */}
       <motion.section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -102,21 +102,9 @@ export default function LandingPageClient() {
         {/* Subtle Animated Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-[#0a192f]/50 via-[#1e3a5f]/30 to-[#0f172a]/50"></div>
-          <motion.div
-            className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"
-            animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          ></motion.div>
-          <motion.div
-            className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"
-            animate={{ scale: [1, 1.2, 1], rotate: [0, -90, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-          ></motion.div>
-          <motion.div
-            className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          ></motion.div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl animate-pulse"></div>
           {/* Floating burger moved farther right so it doesn't collide with hero copy */}
           <motion.div
             className="absolute top-16 right-[26%] text-5xl opacity-80 hidden xl:block"

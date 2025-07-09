@@ -130,30 +130,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div suppressHydrationWarning className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center relative overflow-hidden">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0">
-        {/* Animated Particles */}
-        <div className="absolute top-20 left-20 w-2 h-2 bg-orange-400 rounded-full animate-ping"></div>
-        <div className="absolute top-40 right-32 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-3 h-3 bg-green-400 rounded-full animate-bounce"></div>
-        <div className="absolute bottom-20 right-20 w-2 h-2 bg-purple-400 rounded-full animate-ping delay-1000"></div>
+    <div suppressHydrationWarning className="min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] flex items-center justify-center relative overflow-hidden">
+      {/* Professional Navy Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl animate-pulse delay-2000"></div>
 
         {/* Floating Food Icons */}
-        <div className="absolute top-20 left-20 w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center animate-float">
+        <div className="absolute top-20 left-20 w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center animate-float">
           <span className="text-2xl">🍕</span>
         </div>
-        <div className="absolute top-40 right-32 w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center animate-float-delayed">
+        <div className="absolute top-40 right-32 w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center animate-float-delayed">
           <span className="text-xl">🍔</span>
         </div>
         <div className="absolute bottom-32 left-16 w-14 h-14 bg-yellow-500/10 rounded-full flex items-center justify-center animate-bounce-slow">
           <span className="text-xl">🌮</span>
         </div>
-
-        {/* Dynamic Gradient Orbs */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/5 to-red-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-full blur-2xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-full blur-xl animate-pulse delay-2000"></div>
       </div>
 
       <div className="flex w-full max-w-7xl mx-auto relative z-10">
@@ -211,18 +205,18 @@ export default function LoginPage() {
         {/* Right Side - Enhanced Login Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
           <div className="w-full max-w-md">
-            <div className="bg-gray-800/30 backdrop-blur-2xl border border-gray-700/30 rounded-3xl p-10 shadow-2xl animate-slide-in-right relative overflow-hidden">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 shadow-2xl animate-slide-in-right relative overflow-hidden">
               {/* Animated Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-blue-500/5 rounded-3xl"></div>
 
               <div className="relative z-10">
                 <div className="text-center mb-10">
                   <h2 className="text-4xl font-bold text-white mb-3">Welcome Back!</h2>
-                  <p className="text-gray-400 text-lg">
+                  <p className="text-slate-300 text-lg">
                     New to Campus Bites?{" "}
             <Link
                       href="/register"
-                      className="text-orange-400 hover:text-orange-300 font-semibold transition-colors hover:underline"
+                      className="text-red-400 hover:text-red-300 font-semibold transition-colors hover:underline"
                     >
               Join us here
             </Link>
@@ -237,17 +231,17 @@ export default function LoginPage() {
                       name="role"
               render={({ field }) => (
                 <FormItem>
-                          <FormLabel className="text-gray-300 text-lg font-semibold">I am a</FormLabel>
+                          <FormLabel className="text-slate-300 text-lg font-semibold">I am a</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                               <SelectTrigger 
                                 suppressHydrationWarning 
-                                className="bg-gray-700/50 border-gray-600 text-white rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                className="bg-white/10 border-white/20 text-white rounded-xl h-14 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent backdrop-blur-sm"
                               >
                                 <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                     </FormControl>
-                            <SelectContent className="bg-gray-800 border-gray-700">
+                            <SelectContent className="bg-slate-800/90 backdrop-blur-xl border-white/20">
                               <SelectItem value="student" className="text-white hover:bg-gray-700 cursor-pointer">
                                 <div className="flex items-center gap-3">
                                   <GraduationCap className="w-5 h-5 text-blue-400" />
@@ -272,16 +266,16 @@ export default function LoginPage() {
                       name="email"
               render={({ field }) => (
                 <FormItem>
-                          <FormLabel className="text-gray-300 text-lg font-semibold">Email Address</FormLabel>
+                          <FormLabel className="text-slate-300 text-lg font-semibold">Email Address</FormLabel>
                   <FormControl>
                             <div className="relative">
-                              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+                              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6" />
                     <Input
                                 suppressHydrationWarning
                                 placeholder="Enter your email"
                                 type="email"
                                 autoComplete="email"
-                                className="pl-12 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                className="pl-12 bg-white/10 border-white/20 text-white placeholder-slate-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all backdrop-blur-sm"
                       {...field}
                     />
                             </div>
@@ -297,30 +291,30 @@ export default function LoginPage() {
               render={({ field }) => (
                 <FormItem>
                           <div className="flex items-center justify-between">
-                            <FormLabel className="text-gray-300 text-lg font-semibold">Password</FormLabel>
+                            <FormLabel className="text-slate-300 text-lg font-semibold">Password</FormLabel>
                             <Link
                               href="/forgot-password"
-                              className="text-sm text-orange-400 hover:text-orange-300 transition-colors hover:underline"
+                              className="text-sm text-red-400 hover:text-red-300 transition-colors hover:underline"
                             >
                               Forgot password?
                             </Link>
                           </div>
                   <FormControl>
                             <div className="relative">
-                              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+                              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6" />
                       <Input
                                 suppressHydrationWarning
                                 placeholder="Enter your password"
                                 type={showPassword ? "text" : "password"}
                                 autoComplete="current-password"
-                                className="pl-12 pr-12 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                className="pl-12 pr-12 bg-white/10 border-white/20 text-white placeholder-slate-400 rounded-xl h-14 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all backdrop-blur-sm"
                         {...field}
                       />
                       <button
                                 suppressHydrationWarning
                                 type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
                               >
                                 {showPassword ? <EyeOff className="w-6 h-6" /> : <Eye className="w-6 h-6" />}
                       </button>
@@ -335,7 +329,7 @@ export default function LoginPage() {
                       suppressHydrationWarning
                       type="submit"
               disabled={isLoading}
-                      className={`w-full ${selectedRole ? `bg-gradient-to-r ${getRoleColor(selectedRole)}` : "bg-gradient-to-r from-orange-500 to-red-500"} hover:scale-105 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg text-lg group`}
+                      className={`w-full ${selectedRole ? `bg-gradient-to-r ${getRoleColor(selectedRole)}` : "bg-gradient-to-r from-red-500 to-rose-500"} hover:scale-105 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg text-lg group`}
                     >
               {isLoading ? (
                         <div className="flex items-center gap-3">
@@ -358,10 +352,10 @@ export default function LoginPage() {
                   <>
                     <div className="relative my-6">
                       <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-gray-600" />
+                        <span className="w-full border-t border-white/20" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-gray-800/30 backdrop-blur-2xl px-2 text-gray-400">
+                        <span className="bg-white/10 backdrop-blur-xl px-2 text-slate-400">
               Or continue with
                         </span>
                       </div>
@@ -371,7 +365,7 @@ export default function LoginPage() {
                       suppressHydrationWarning
                       type="button"
                       variant="outline"
-                      className="w-full bg-transparent border-gray-600 hover:bg-gray-700/50 text-white rounded-xl h-14 text-lg"
+                      className="w-full bg-white/10 border-white/20 hover:bg-white/20 text-white rounded-xl h-14 text-lg backdrop-blur-sm transition-all"
                       onClick={() => window.location.href = "http://localhost:8080/api/auth/google"}
                     >
                       <svg className="w-6 h-6 mr-3" viewBox="0 0 48 48">

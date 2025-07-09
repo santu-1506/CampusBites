@@ -54,7 +54,7 @@ exports.registerUser = async (req, res) => {
     sendEmailVerificationOTP(req, user);
 
     const token = JWT.sign(
-      { id: user._id, email: user.email, name: user.name, role: user.role },
+      { id: user._id, email: user.email, name: user.name, role: user.role, isBanned: user.isBanned, is_verified: user.is_verified },
       process.env.JWT_SECRET,
       { expiresIn: "200h" }
     );
@@ -168,7 +168,9 @@ exports.loginUser = async (req, res, next) => {
             id: user1._id, 
             email: user1.email, 
             name: user1.name, 
-            role: user1.role 
+            role: user1.role,
+            isBanned: user1.isBanned,
+            is_verified: user1.is_verified
         }, process.env.JWT_SECRET, { expiresIn: '120h' });
         const option = {
             httpOnly: false,

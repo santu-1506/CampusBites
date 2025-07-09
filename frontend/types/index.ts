@@ -8,6 +8,8 @@ export interface User {
   dateOfBirth?: string;
   role: "student" | "campus_store" | "admin";
   isVerified: boolean;
+  isBanned?: boolean;
+  is_verified?: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -11,9 +11,12 @@ export class AuthError extends Error {
 
 // Helper function to handle auth errors
 const handleAuthError = (error: any) => {
-  if (error.response?.status === 401) {
+  if (error.response?.status === 401 || error.response?.status === 403) {
     const errorData = error.response.data;
-    if (errorData.code === 'TOKEN_EXPIRED') {
+    if (errorData?.message === 'You are banned by admin.') {
+      throw new Error(errorData.message);
+    }
+    if (errorData?.code === 'TOKEN_EXPIRED') {
       // Clear expired token
       localStorage.removeItem('token');
       // Trigger a page reload to reset auth state

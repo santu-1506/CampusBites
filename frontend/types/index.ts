@@ -6,8 +6,10 @@ export interface User {
   bio?: string;
   address?: string;
   dateOfBirth?: string;
-  role: "student" | "campus_store" | "admin";
-  isVerified: boolean;
+  role: 'student' | 'canteen' | 'admin';
+  campus: string;
+  canteenId?: string;
+  isVerified?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -57,10 +59,14 @@ export interface Order {
     quantity: number;
   }>;
   total: number;
-  status: "placed" | "preparing" | "ready" | "completed" | "cancelled";
+  status: 'placed' | 'preparing' | 'ready' | 'completed' | 'cancelled';
+  // Customer details for canteen view
+  customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
   payment?: {
-    method: "cod" | "upi" | "card";
-    status: "pending" | "completed" | "failed" | "refunded";
+    method: 'cod' | 'upi' | 'card';
+    status: 'pending' | 'completed' | 'failed' | 'refunded';
     transactionId?: string;
     upiDetails?: {
       upiId: string;

@@ -139,24 +139,21 @@ export default function OrdersPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center relative overflow-hidden'>
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
         {/* Background decorations */}
-        <div className='absolute inset-0'>
-          <div className='absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-orange-200/20 to-red-200/20 rounded-full blur-3xl'></div>
-          <div className='absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-purple-200/20 rounded-full blur-3xl'></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-orange-200/30 to-red-200/30 dark:from-orange-200/20 dark:to-red-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-purple-200/30 dark:from-blue-200/20 dark:to-purple-200/20 rounded-full blur-3xl"></div>
         </div>
-
-        <Card className='w-full max-w-md mx-4 shadow-2xl border-0 bg-white/80 backdrop-blur-xl relative z-10'>
-          <CardContent className='pt-12 pb-8 px-8 text-center'>
-            <div className='w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg'>
-              <ShoppingBag className='w-10 h-10 text-white' />
+        
+        <Card className="w-full max-w-md mx-4 shadow-2xl border-0 bg-white/90 dark:bg-white/80 backdrop-blur-xl relative z-10">
+          <CardContent className="pt-12 pb-8 px-8 text-center">
+            <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <ShoppingBag className="w-10 h-10 text-white" />
             </div>
-            <CardTitle className='text-2xl font-bold mb-4 text-gray-800'>
-              Please Sign In
-            </CardTitle>
-            <CardDescription className='text-gray-600 mb-8 text-lg'>
-              You need to be logged in to view your order history and track your
-              delicious meals.
+            <CardTitle className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-900">Please Sign In</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-700 mb-8 text-lg">
+              You need to be logged in to view your order history and track your delicious meals.
             </CardDescription>
             <Button
               asChild
@@ -257,16 +254,16 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900'>
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 transition-colors duration-500">
         {/* Modern Header */}
-        <div className='bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50'>
-          <div className='container mx-auto px-6 py-6'>
-            <div className='flex items-center justify-between'>
+        <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
+          <div className="container mx-auto px-6 py-6">
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className='text-4xl font-bold text-white'>My Orders</h1>
-                <p className='text-blue-200 mt-1'>
-                  Track your delicious journey
-                </p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                  My Orders
+                </h1>
+                <p className="text-gray-600 dark:text-blue-200 mt-1">Track your delicious journey</p>
               </div>
             </div>
           </div>
@@ -304,9 +301,9 @@ export default function OrdersPage() {
                   ease: 'easeInOut',
                 }}
               />
-            </div>
-            <motion.p
-              className='text-blue-200 text-lg font-medium'
+          </div>
+            <motion.p 
+              className="text-gray-600 dark:text-blue-200 text-lg font-medium"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{
                 duration: 1.5,
@@ -323,36 +320,29 @@ export default function OrdersPage() {
 
   if (error) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900'>
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 transition-colors duration-500">
         {/* Modern Header */}
-        <div className='bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50'>
-          <div className='container mx-auto px-6 py-6'>
-            <h1 className='text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'>
+        <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
+          <div className="container mx-auto px-6 py-6">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               My Orders
             </h1>
           </div>
         </div>
 
-        <div className='container mx-auto px-6 py-12'>
-          <Alert className='max-w-2xl mx-auto border-red-200 bg-red-50'>
-            <AlertCircle className='h-5 w-5 text-red-600' />
-            <AlertTitle className='text-red-800 font-semibold'>
-              Oops! Something went wrong
-            </AlertTitle>
-            <AlertDescription className='text-red-700 mb-4'>
-              {error}
-            </AlertDescription>
-            <div className='flex gap-3'>
-              {error.includes('Session expired') && (
-                <Button asChild className='bg-red-600 hover:bg-red-700'>
-                  <Link href='/login'>Login Again</Link>
-                </Button>
-              )}
-              <Button
-                onClick={fetchOrders}
-                variant='outline'
-                className='border-red-300 text-red-700 hover:bg-red-50'>
-                <RefreshCw className='w-4 h-4 mr-2' />
+        <div className="container mx-auto px-6 py-12">
+          <Alert className="max-w-2xl mx-auto border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20">
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <AlertTitle className="text-red-800 dark:text-red-300 font-semibold">Oops! Something went wrong</AlertTitle>
+            <AlertDescription className="text-red-700 dark:text-red-400 mb-4">{error}</AlertDescription>
+            <div className="flex gap-3">
+            {error.includes("Session expired") && (
+                <Button asChild className="bg-red-600 hover:bg-red-700">
+                <Link href="/login">Login Again</Link>
+              </Button>
+            )}
+              <Button onClick={fetchOrders} variant="outline" className="border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30">
+                <RefreshCw className="w-4 h-4 mr-2" />
                 Try Again
               </Button>
             </div>
@@ -363,83 +353,117 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden'>
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 relative overflow-hidden transition-colors duration-500">
       {/* Animated Background Elements */}
-      <div className='absolute inset-0 overflow-hidden'>
-        <motion.div
-          className='absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl'
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className='absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl'
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 2,
-          }}
-        />
-        <motion.div
-          className='absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl'
-          animate={{
-            x: [-100, 100, -100],
-            y: [-50, 50, -50],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Light mode background */}
+        <div className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-300/20 to-purple-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-300/20 to-pink-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+        </div>
+
+        {/* Dark mode background */}
+        <div className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"
+            animate={{
+              x: [-100, 100, -100],
+              y: [-50, 50, -50],
+            }}
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
       </div>
 
       {/* Modern Header with Stats */}
-      <div className='bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50'>
-        <div className='container mx-auto px-6 py-6'>
-          <div className='flex items-center justify-between flex-wrap gap-4'>
+      <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className='text-4xl font-bold text-white'>My Orders</h1>
-              <p className='text-gray-500 mt-1'>Track your delicious journey</p>
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                My Orders
+              </h1>
+              <p className="text-gray-600 dark:text-blue-200 mt-1">Track your delicious journey</p>
             </div>
-            <div className='flex items-center gap-6'>
-              <motion.div
-                className='text-center'
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}>
-                <div className='text-2xl font-bold text-white'>
-                  <AnimatedCounter value={orders.length} />
-                </div>
-                <div className='text-sm text-blue-200'>Total Orders</div>
-              </motion.div>
-              <motion.div
-                className='text-center'
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}>
-                <div className='text-2xl font-bold text-green-400'>
-                  <AnimatedCounter
-                    value={
-                      orders.filter((o) => o.status === 'completed').length
-                    }
-                  />
-                </div>
-                <div className='text-sm text-blue-200'>Completed</div>
-              </motion.div>
+            <div className="flex items-center gap-6">
+                              <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <AnimatedCounter value={orders.length} />
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-blue-200">Total Orders</div>
+                </motion.div>
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <div className="text-2xl font-bold text-green-500 dark:text-green-400">
+                    <AnimatedCounter value={orders.filter(o => o.status === 'completed').length} />
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-blue-200">Completed</div>
+                </motion.div>
             </div>
           </div>
         </div>
@@ -468,15 +492,15 @@ export default function OrdersPage() {
               </motion.div>
               <div className='absolute -inset-4 bg-gradient-to-r from-blue-200 to-purple-300 rounded-full blur-xl opacity-30'></div>
             </div>
-            <motion.h3
-              className='text-3xl font-bold text-white mb-4'
+            <motion.h3 
+              className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}>
               No orders yet
             </motion.h3>
-            <motion.p
-              className='text-blue-200 text-lg mb-8 max-w-md mx-auto'
+            <motion.p 
+              className="text-gray-600 dark:text-blue-200 text-lg mb-8 max-w-md mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}>
@@ -618,169 +642,97 @@ export default function OrdersPage() {
 
                       <Separator className='my-4' />
 
-                      <div className='flex items-center justify-between'>
-                        <div className='flex items-center gap-2 text-sm text-gray-600'>
-                          <Clock className='w-4 h-4' />
-                          <span>{statusConfig.description}</span>
-                        </div>
-
-                        <div className='flex gap-3'>
-                          <Dialog
-                            open={isDetailModalOpen}
-                            onOpenChange={setIsDetailModalOpen}>
-                            <DialogTrigger asChild>
-                              <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}>
-                                <Button
-                                  variant='outline'
-                                  className='border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300 group'
-                                  onClick={() => handleViewDetails(order._id)}
-                                  disabled={orderDetailLoading}>
-                                  {orderDetailLoading ? (
-                                    <motion.div
-                                      animate={{ rotate: 360 }}
-                                      transition={{
-                                        duration: 1,
-                                        repeat: Infinity,
-                                        ease: 'linear',
-                                      }}>
-                                      <Loader2 className='w-4 h-4 mr-2' />
-                                    </motion.div>
-                                  ) : (
-                                    <motion.div
-                                      whileHover={{ scale: 1.2 }}
-                                      transition={{
-                                        type: 'spring',
-                                        stiffness: 400,
-                                        damping: 10,
-                                      }}>
-                                      <Eye className='w-4 h-4 mr-2' />
-                                    </motion.div>
-                                  )}
-                                  View Details
-                                </Button>
-                              </motion.div>
-                            </DialogTrigger>
-                            <DialogContent className='max-w-4xl max-h-[90vh] overflow-y-auto'>
-                              {orderDetailLoading ? (
-                                <>
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      Loading Order Details...
-                                    </DialogTitle>
-                                  </DialogHeader>
-                                  <div className='flex items-center justify-center py-20'>
-                                    <Loader2 className='h-8 w-8 animate-spin text-orange-500' />
-                                  </div>
-                                </>
-                              ) : selectedOrder ? (
-                                <>
-                                  <DialogHeader className='border-b pb-6'>
-                                    <div className='flex items-center gap-4'>
-                                      <div
-                                        className={`w-14 h-14 ${
-                                          getStatusConfig(selectedOrder.status)
-                                            .color
-                                        } rounded-xl flex items-center justify-center shadow-lg`}>
-                                        {(() => {
-                                          const StatusIcon = getStatusConfig(
-                                            selectedOrder.status
-                                          ).icon;
-                                          return (
-                                            <StatusIcon className='w-7 h-7 text-white' />
-                                          );
-                                        })()}
-                                      </div>
-                                      <div>
-                                        <DialogTitle className='text-2xl font-bold text-gray-800'>
-                                          Order #
-                                          {selectedOrder._id
-                                            .slice(-8)
-                                            .toUpperCase()}
-                                        </DialogTitle>
-                                        <p className='text-gray-600 mt-1'>
-                                          {formatDate(selectedOrder.createdAt)}
-                                        </p>
-                                      </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4" />
+                        <span>{statusConfig.description}</span>
+                      </div>
+                      
+                      <div className="flex gap-3">
+                        <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
+                          <DialogTrigger asChild>
+                            <motion.div
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              <Button 
+                                variant="outline" 
+                                className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300 group"
+                                onClick={() => handleViewDetails(order._id)}
+                                disabled={orderDetailLoading}
+                              >
+                                {orderDetailLoading ? (
+                                  <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                  >
+                                    <Loader2 className="w-4 h-4 mr-2" />
+                                  </motion.div>
+                                ) : (
+                                  <motion.div
+                                    whileHover={{ scale: 1.2 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                  </motion.div>
+                                )}
+                                View Details
+                              </Button>
+                            </motion.div>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900">
+                            {orderDetailLoading ? (
+                              <>
+                                <DialogHeader>
+                                  <DialogTitle>Loading Order Details...</DialogTitle>
+                                </DialogHeader>
+                                <div className="flex items-center justify-center py-20">
+                                  <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+                                </div>
+                              </>
+                            ) : selectedOrder ? (
+                              <>
+                                <DialogHeader className="border-b pb-6 dark:border-slate-700">
+                                  <div className="flex items-center gap-4">
+                                    <div className={`w-14 h-14 ${getStatusConfig(selectedOrder.status).color} rounded-xl flex items-center justify-center shadow-lg`}>
+                                      {(() => {
+                                        const StatusIcon = getStatusConfig(selectedOrder.status).icon;
+                                        return <StatusIcon className="w-7 h-7 text-white" />;
+                                      })()}
                                     </div>
-                                  </DialogHeader>
-                                  <OrderDetailsContent order={selectedOrder} />
-                                </>
-                              ) : (
-                                <>
-                                  <DialogHeader>
-                                    <DialogTitle>Order Details</DialogTitle>
-                                  </DialogHeader>
-                                  <div className='flex items-center justify-center py-20'>
-                                    <p className='text-gray-500'>
-                                      No order selected
-                                    </p>
+                                    <div>
+                                      <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                        Order #{selectedOrder._id.slice(-8).toUpperCase()}
+                                      </DialogTitle>
+                                      <p className="text-gray-600 dark:text-gray-400 mt-1">{formatDate(selectedOrder.createdAt)}</p>
+                                    </div>
                                   </div>
-                                </>
-                              )}
-                            </DialogContent>
-                          </Dialog>
-
-                          {order.status === 'completed' && (
-                            <Button className='bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300'>
-                              <RefreshCw className='w-4 h-4 mr-2' />
-                              Reorder
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex gap-2 mt-2'>
-                        {/* Status Toggling Buttons */}
-                        {order.status === 'placed' && (
-                          <Button
-                            size='sm'
-                            className='bg-yellow-500 text-white hover:bg-yellow-600'
-                            disabled={statusUpdating === order._id + 'preparing'}
-                            onClick={() => handleStatusUpdate(order._id, 'preparing')}
-                          >
-                            {statusUpdating === order._id + 'preparing' ? <Loader2 className='w-4 h-4 animate-spin mr-2' /> : null}
-                            Start Preparing
-                          </Button>
-                        )}
-                        {order.status === 'preparing' && (
-                          <Button
-                            size='sm'
-                            className='bg-purple-500 text-white hover:bg-purple-600'
-                            disabled={statusUpdating === order._id + 'ready'}
-                            onClick={() => handleStatusUpdate(order._id, 'ready')}
-                          >
-                            {statusUpdating === order._id + 'ready' ? <Loader2 className='w-4 h-4 animate-spin mr-2' /> : null}
-                            Mark as Ready
-                          </Button>
-                        )}
-                        {order.status === 'ready' && (
-                          <Button
-                            size='sm'
-                            className='bg-green-500 text-white hover:bg-green-600'
-                            disabled={statusUpdating === order._id + 'completed'}
-                            onClick={() => handleStatusUpdate(order._id, 'completed')}
-                          >
-                            {statusUpdating === order._id + 'completed' ? <Loader2 className='w-4 h-4 animate-spin mr-2' /> : null}
-                            Complete Order
-                          </Button>
-                        )}
-                        {/* Cancel button for non-finalized orders */}
-                        {['placed', 'preparing', 'ready'].includes(order.status) && (
-                          <Button
-                            size='sm'
-                            variant='outline'
-                            className='border-red-300 text-red-600 hover:bg-red-50'
-                            disabled={statusUpdating === order._id + 'cancelled'}
-                            onClick={() => handleStatusUpdate(order._id, 'cancelled')}
-                          >
-                            {statusUpdating === order._id + 'cancelled' ? <Loader2 className='w-4 h-4 animate-spin mr-2' /> : null}
-                            Cancel Order
+                                </DialogHeader>
+                                <OrderDetailsContent order={selectedOrder} />
+                              </>
+                            ) : (
+                              <>
+                                <DialogHeader>
+                                  <DialogTitle>Order Details</DialogTitle>
+                                </DialogHeader>
+                                <div className="flex items-center justify-center py-20">
+                                  <p className="text-gray-500 dark:text-gray-400">No order selected</p>
+                                </div>
+                              </>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                        
+                        {order.status === "completed" && (
+                          <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            Reorder
                           </Button>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </CardContent>
+                </Card>
                 </motion.div>
               );
             })}
@@ -890,13 +842,13 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
     <div className='grid md:grid-cols-2 gap-8 py-6'>
       {/* Order Timeline */}
       <div>
-        <h3 className='text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2'>
-          <Truck className='w-5 h-5' />
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+          <Truck className="w-5 h-5" />
           Order Timeline
         </h3>
         <div className='space-y-6 relative'>
           {/* Progress Line */}
-          <div className='absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200'>
+          <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200 dark:bg-slate-700">
             <motion.div
               className='bg-gradient-to-b from-green-500 to-blue-500 w-full origin-top'
               initial={{ scaleY: 0 }}
@@ -917,30 +869,26 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
                 className='flex items-center gap-4 relative z-10'
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}>
-                <motion.div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg ${
-                    step.completed
-                      ? step.status === 'cancelled'
-                        ? 'bg-red-500'
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+              >
+                <motion.div 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-lg ${
+                    step.completed 
+                      ? step.status === 'cancelled' 
+                        ? 'bg-red-500' 
                         : 'bg-green-500'
                       : 'bg-gray-200'
                   }`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
-                  whileHover={{ scale: 1.1 }}>
-                  <StepIcon
-                    className={`w-5 h-5 ${
-                      step.completed ? 'text-white' : 'text-gray-400'
-                    }`}
-                  />
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <StepIcon className={`w-5 h-5 ${step.completed ? 'text-white' : 'text-gray-400 dark:text-slate-500'}`} />
                 </motion.div>
-                <div className='flex-1'>
-                  <motion.div
-                    className={`font-medium ${
-                      step.completed ? 'text-gray-800' : 'text-gray-400'
-                    }`}
+                <div className="flex-1">
+                  <motion.div 
+                    className={`font-medium ${step.completed ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-slate-500'}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.2 + 0.5 }}>
@@ -965,20 +913,18 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
       {/* Restaurant & Payment Info */}
       <div className='space-y-6'>
         <div>
-          <h3 className='text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-            <MapPin className='w-5 h-5' />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
             Restaurant Details
           </h3>
-          <Card className='p-4 bg-gray-50 border-gray-200'>
-            <div className='flex items-center gap-3'>
-              <div className='w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center'>
-                <ChefHat className='w-6 h-6 text-white' />
-              </div>
+          <Card className="p-4 bg-gray-50 border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                <ChefHat className="w-6 h-6 text-white" />
+                 </div>
               <div>
-                <h4 className='font-semibold text-gray-800'>
-                  {order.canteen?.name || 'Unknown Restaurant'}
-                </h4>
-                <p className='text-sm text-gray-600'>Campus Restaurant</p>
+                <h4 className="font-semibold text-gray-800 dark:text-gray-200">{order.canteen?.name || 'Unknown Restaurant'}</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Campus Restaurant</p>
               </div>
             </div>
           </Card>
@@ -986,37 +932,30 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
 
         {order.payment && (
           <div>
-            <h3 className='text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-              <CreditCard className='w-5 h-5' />
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
               Payment Information
             </h3>
-            <Card className='p-4 bg-gray-50 border-gray-200'>
-              <div className='space-y-3'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600'>Method:</span>
-                  <span className='font-medium capitalize'>
-                    {order.payment.method}
-                  </span>
+            <Card className="p-4 bg-gray-50 border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Method:</span>
+                  <span className="font-medium capitalize dark:text-gray-200">{order.payment.method}</span>
                 </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600'>Status:</span>
-                  <Badge
-                    className={`${
-                      order.payment.status === 'completed'
-                        ? 'bg-green-100 text-green-800'
-                        : order.payment.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    } border-0`}>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                  <Badge className={`${
+                    order.payment.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' :
+                    order.payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' :
+                    'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
+                  } border-0`}>
                     {order.payment.status}
                   </Badge>
                 </div>
                 {order.payment.transactionId && (
-                  <div className='flex justify-between'>
-                    <span className='text-gray-600'>Transaction ID:</span>
-                    <span className='font-mono text-sm'>
-                      {order.payment.transactionId}
-                    </span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                    <span className="font-mono text-sm dark:text-gray-300">{order.payment.transactionId}</span>
                   </div>
                 )}
               </div>
@@ -1026,48 +965,39 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
       </div>
 
       {/* Order Items */}
-      <div className='md:col-span-2 border-t pt-6'>
-        <h3 className='text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2'>
-          <ShoppingBag className='w-5 h-5' />
+      <div className="md:col-span-2 border-t pt-6 dark:border-slate-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
+          <ShoppingBag className="w-5 h-5" />
           Order Items ({order.items.length})
         </h3>
         <div className='space-y-4'>
           {order.items.map((item) => (
-            <Card
-              key={item._id}
-              className='p-4 border-gray-200 hover:shadow-md transition-shadow'>
-              <div className='flex items-center gap-4'>
-                <div className='relative w-16 h-16 rounded-xl overflow-hidden bg-gray-200 flex-shrink-0'>
-                  <Image
-                    src={item.item?.image || '/placeholder.svg'}
+            <Card key={item._id} className="p-4 border-gray-200 dark:border-slate-700 dark:bg-slate-800/50 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-200 dark:bg-slate-700 flex-shrink-0">
+                     <Image
+                       src={item.item?.image || "/placeholder.svg"}
                     alt={item.item?.name || 'Item'}
-                    fill
-                    className='object-cover'
-                  />
-                </div>
-                <div className='flex-1'>
-                  <h4 className='font-semibold text-gray-800 text-lg'>
-                    {item.item?.name || 'Item No Longer Available'}
-                  </h4>
-                  <div className='flex items-center gap-4 mt-2'>
-                    <span className='text-gray-600'>
-                      Quantity: {item.quantity}
-                    </span>
-                    <span className='text-gray-600'>
-                      Price: ₹{item.item?.price || 0}
-                    </span>
+                       fill
+                       className="object-cover"
+                     />
+                   </div>
+                   <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 text-lg">
+                       {item.item?.name || 'Item No Longer Available'}
+                     </h4>
+                  <div className="flex items-center gap-4 mt-2">
+                    <span className="text-gray-600 dark:text-gray-400">Quantity: {item.quantity || 'N/A'}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Price: ₹{item.item?.price || 0}</span>
                   </div>
-                  {(!item.item ||
-                    item.item.name === 'Item No Longer Available') && (
-                    <p className='text-sm text-red-500 italic mt-1'>
-                      This item may have been removed from the menu
-                    </p>
-                  )}
-                </div>
-                <div className='text-right'>
-                  <div className='text-xl font-bold text-gray-800'>
-                    ₹{(item.quantity * (item.item?.price || 0)).toFixed(2)}
-                  </div>
+                     {(!item.item || item.item.name === 'Item No Longer Available') && (
+                    <p className="text-sm text-red-500 italic mt-1">This item may have been removed from the menu</p>
+                     )}
+                   </div>
+                   <div className="text-right">
+                  <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                    ₹{((item.quantity || 0) * (item.item?.price || 0)).toFixed(2)}
+            </div>
                 </div>
               </div>
             </Card>
@@ -1075,14 +1005,10 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
         </div>
 
         {/* Order Total */}
-        <Card className='mt-6 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200'>
-          <div className='flex justify-between items-center'>
-            <div className='text-xl font-semibold text-gray-800'>
-              Total Amount
-            </div>
-            <div className='text-3xl font-bold text-gray-800'>
-              ₹{order.total.toFixed(2)}
-            </div>
+        <Card className="mt-6 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 dark:bg-gradient-to-r dark:from-slate-800 dark:to-slate-700 dark:border-slate-700">
+          <div className="flex justify-between items-center">
+            <div className="text-xl font-semibold text-gray-800 dark:text-gray-200">Total Amount</div>
+            <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">₹{order.total.toFixed(2)}</div>
           </div>
         </Card>
       </div>

@@ -98,7 +98,9 @@ export default function AdminDashboard() {
   const [topCanteens, setTopCanteens] = useState<any[]>([])
   const [usersList, setUsersList] = useState<any[]>([]) // New state for users table
   const [actionLoading, setActionLoading] = useState<{[userId: string]: boolean}>({});
-  
+  const [canteens, setCanteens] = useState<any[]>([]);
+  const [canteenActionLoading, setCanteenActionLoading] = useState<{[canteenId: string]: boolean}>({});
+
   // Refs for chart cleanup
   const chartRefs = useRef<any[]>([])
 
@@ -123,25 +125,17 @@ export default function AdminDashboard() {
     fetchUsersByRole();
   }, []);
 
+  useEffect(() => {
+    fetch("/api/canteens/")
+      .then(res => res.json())
+      .then(data => setCanteens(data.data || []));
+  }, []);
+
   // Helper to update a single user in usersList
   function updateUserInList(userId: string, updates: any) {
     setUsersList(users => users.map(u => u._id === userId ? { ...u, ...updates } : u));
   }
 
-  // Handler functions
-  async function handleApproveVendor(userId: string) {
-    setActionLoading(l => ({ ...l, [userId]: true }));
-    const res = await fetch("/api/v1/admin/users/approve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
-    setActionLoading(l => ({ ...l, [userId]: false }));
-    if (res.ok) {
-      toast({ title: "Vendor approved" });
-      updateUserInList(userId, { is_verified: true });
-    }
-  }
 
   async function handleSuspendCanteen(canteenId: string, userId: string) {
     setActionLoading(l => ({ ...l, [userId]: true }));
@@ -171,17 +165,32 @@ export default function AdminDashboard() {
     }
   }
 
-  async function handleBanVendor(userId: string, block: boolean) {
-    setActionLoading(l => ({ ...l, [userId]: true }));
-    const res = await fetch("/api/v1/admin/users/block", {
+
+  async function handleApproveCanteen(canteenId: string) {
+    setCanteenActionLoading(l => ({ ...l, [canteenId]: true }));
+    const res = await fetch("/api/v1/admin/approveCanteen", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, block }),
+      body: JSON.stringify({ canteenId }),
     });
-    setActionLoading(l => ({ ...l, [userId]: false }));
+    setCanteenActionLoading(l => ({ ...l, [canteenId]: false }));
     if (res.ok) {
-      toast({ title: block ? "Vendor blocked" : "Vendor unblocked" });
-      updateUserInList(userId, { isBanned: block });
+      toast({ title: "Canteen approved" });
+      setCanteens(canteens => canteens.map(c => c._id === canteenId ? { ...c, is_verified: true } : c));
+    }
+  }
+
+  async function handleBanCanteen(canteenId: string, ban: boolean) {
+    setCanteenActionLoading(l => ({ ...l, [canteenId]: true }));
+    const res = await fetch("/api/v1/admin/banCanteen", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ canteenId, ban }),
+    });
+    setCanteenActionLoading(l => ({ ...l, [canteenId]: false }));
+    if (res.ok) {
+      toast({ title: ban ? "Canteen banned" : "Canteen unbanned" });
+      setCanteens(canteens => canteens.map(c => c._id === canteenId ? { ...c, isBanned: ban } : c));
     }
   }
 
@@ -860,72 +869,74 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Vendors Table Section */}
-          <div className="bg-white/10 backdrop-blur-xl p-6 rounded-xl border border-white/20 my-8">
-            <h2 className="text-2xl font-bold mb-4 text-white">All Vendors / Canteens</h2>
+        {/* Canteens Table Section */}
+        <div className="bg-white/10 backdrop-blur-xl p-6 rounded-xl border border-white/20 my-8">
+            <h2 className="text-2xl font-bold mb-4 text-white">All Canteens</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full text-white bg-white/5 rounded-xl overflow-hidden">
                 <thead>
                   <tr className="bg-white/10">
                     <th className="px-4 py-2 font-semibold">Name</th>
-                    <th className="px-4 py-2 font-semibold">Email</th>
-                    <th className="px-4 py-2 font-semibold">Canteen</th>
+                    <th className="px-4 py-2 font-semibold">Campus</th>
                     <th className="px-4 py-2 font-semibold">Verified</th>
                     <th className="px-4 py-2 font-semibold">Banned</th>
+                    <th className="px-4 py-2 font-semibold">Open</th>
                     <th className="px-4 py-2 font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {vendors.length === 0 ? (
+                  {canteens.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-8 text-slate-400">No vendors found.</td>
+                      <td colSpan={6} className="text-center py-8 text-slate-400">No canteens found.</td>
                     </tr>
                   ) : (
-                    vendors.map((user, idx) => (
-                      <tr key={user._id} className="border-b border-white/10 hover:bg-white/10 transition group">
-                        <td className="px-4 py-2 font-medium flex items-center gap-2">
-                          {user.isBanned && <span className="inline-block bg-red-600 text-xs text-white px-2 py-0.5 rounded-full mr-1">Banned</span>}
-                          {!user.isBanned && <span className="inline-block bg-green-600 text-xs text-white px-2 py-0.5 rounded-full mr-1">Active</span>}
-                          {user.name}
-                        </td>
-                        <td className="px-4 py-2">{user.email}</td>
-                        <td className="px-4 py-2">{user.canteenId?.name || "-"}</td>
+                    canteens.map((canteen) => (
+                      <tr key={canteen._id} className="border-b border-white/10 hover:bg-white/10 transition group">
+                        <td className="px-4 py-2 font-medium">{canteen.name}</td>
+                        <td className="px-4 py-2">{canteen.campus?.name || "-"}</td>
                         <td className="px-4 py-2">
-                          <Badge variant={user.is_verified ? "default" : "secondary"} className={user.is_verified ? "bg-green-500/90 text-white" : "bg-gray-700/80 text-white"}>
-                            {user.is_verified ? "Yes" : "No"}
+                          <Badge variant={canteen.is_verified ? "default" : "secondary"} className={canteen.is_verified ? "bg-green-500/90 text-white" : "bg-gray-700/80 text-white"}>
+                            {canteen.is_verified ? "Yes" : "No"}
                           </Badge>
                         </td>
                         <td className="px-4 py-2">
-                          <Badge variant={user.isBanned ? "destructive" : "secondary"} className={user.isBanned ? "bg-red-500/90 text-white" : "bg-gray-700/80 text-white"}>
-                            {user.isBanned ? "Yes" : "No"}
+                          <Badge variant={canteen.isBanned ? "destructive" : "secondary"} className={canteen.isBanned ? "bg-red-500/90 text-white" : "bg-gray-700/80 text-white"}>
+                            {canteen.isBanned ? "Yes" : "No"}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-2">
+                          <Badge variant={canteen.isOpen ? "default" : "secondary"} className={canteen.isOpen ? "bg-green-500/90 text-white" : "bg-gray-700/80 text-white"}>
+                            {canteen.isOpen ? "Yes" : "No"}
                           </Badge>
                         </td>
                         <td className="px-4 py-2">
                           <div className="flex flex-wrap gap-2">
-                            {!user.is_verified && (
+                            {/* Approve button */}
+                            {!canteen.is_verified && (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button size="icon" variant="ghost" className="hover:bg-green-600/20 text-green-400 border border-green-400 rounded-full" onClick={() => handleApproveVendor(user._id) } aria-label="Approve Vendor" disabled={actionLoading[user._id]}>
-                                      {actionLoading[user._id] ? <span className="animate-spin w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full"></span> : <ShieldCheck className="w-5 h-5" />}
+                                    <Button size="icon" variant="ghost" className="hover:bg-green-600/20 text-green-400 border border-green-400 rounded-full" onClick={() => handleApproveCanteen(canteen._id)} aria-label="Approve Canteen" disabled={canteenActionLoading[canteen._id]}>
+                                      {canteenActionLoading[canteen._id] ? <span className="animate-spin w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full"></span> : <ShieldCheck className="w-5 h-5" />}
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>Approve vendor</TooltipContent>
+                                  <TooltipContent>Approve canteen</TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             )}
+                            {/* Ban/Unban button */}
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button size="icon" variant="ghost" className={`rounded-full border ${user.isBanned ? 'text-green-400 border-green-400 hover:bg-green-600/20' : 'text-red-400 border-red-400 hover:bg-red-600/20'}`} onClick={() => handleBanVendor(user._id, !user.isBanned)} aria-label={user.isBanned ? "Unblock Vendor" : "Block Vendor"} disabled={actionLoading[user._id]}>
-                                    {actionLoading[user._id]
-                                      ? <span className={`animate-spin w-5 h-5 border-2 ${user.isBanned ? 'border-green-400' : 'border-red-400'} border-t-transparent rounded-full`}></span>
-                                      : user.isBanned
+                                  <Button size="icon" variant="ghost" className={`rounded-full border ${canteen.isBanned ? 'text-green-400 border-green-400 hover:bg-green-600/20' : 'text-red-400 border-red-400 hover:bg-red-600/20'}`} onClick={() => handleBanCanteen(canteen._id, !canteen.isBanned)} aria-label={canteen.isBanned ? "Unban Canteen" : "Ban Canteen"} disabled={canteenActionLoading[canteen._id]}>
+                                    {canteenActionLoading[canteen._id]
+                                      ? <span className={`animate-spin w-5 h-5 border-2 ${canteen.isBanned ? 'border-green-400' : 'border-red-400'} border-t-transparent rounded-full`}></span>
+                                      : canteen.isBanned
                                         ? <UserCheck className="w-5 h-5" />
                                         : <UserX className="w-5 h-5" />}
                                   </Button>
                                 </TooltipTrigger>
-                                <TooltipContent>{user.isBanned ? "Unblock vendor" : "Block vendor"}</TooltipContent>
+                                <TooltipContent>{canteen.isBanned ? "Unban canteen" : "Ban canteen"}</TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           </div>

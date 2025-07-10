@@ -576,35 +576,25 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// Approve vendor (canteen owner)
-exports.approveVendor = async (req, res) => {
+exports.approveCanteen = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const user = await User.findByIdAndUpdate(userId, { is_verified: true }, { new: true });
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.canteenId) {
-      await Canteen.findByIdAndUpdate(user.canteenId, { is_verified: true });
-    }
-    res.json({ message: "Vendor approved", user });
+    const { canteenId } = req.body;
+    const canteen = await Canteen.findByIdAndUpdate(canteenId, { is_verified: true }, { new: true });
+    if (!canteen) return res.status(404).json({ message: "Canteen not found" });
+    res.json({ message: "Canteen approved", canteen });
   } catch (error) {
-    console.error("Error approving vendor:", error);
+    console.error("Error approving canteen:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// Block or unblock vendor (canteen owner)
-exports.blockVendor = async (req, res) => {
+exports.banCanteen = async (req, res) => {
   try {
-    const { userId, block } = req.body; // block: true to block, false to unblock
-    const user = await User.findByIdAndUpdate(userId, { isBanned: block }, { new: true });
-    if (!user) return res.status(404).json({ message: "User not found" });
-    // Also update the canteen's isBanned if user has canteenId
-    if (user.canteenId) {
-      await Canteen.findByIdAndUpdate(user.canteenId, { isBanned: block });
-    }
-    res.json({ message: block ? "Vendor blocked" : "Vendor unblocked", user });
+    const { canteenId, ban } = req.body; // ban: true to ban, false to unban
+    await Canteen.findByIdAndUpdate(canteenId, { isBanned: ban });
+    res.json({ message: ban ? "Canteen has been banned." : "Canteen has been unbanned." });
   } catch (error) {
-    console.error("Error blocking/unblocking vendor:", error);
+    console.error("Error banning/unbanning canteen:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

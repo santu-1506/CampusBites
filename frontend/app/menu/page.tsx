@@ -49,8 +49,11 @@ export default function MenuPage() {
         console.log('📋 Received data:', data);
         console.log('🏢 Number of canteens:', data.data?.length || 0);
         
-        setCanteens(data.data || []);
-        setFilteredCanteens(data.data || []);
+        const visibleCanteens = (data.data || []).filter(
+          (c: Canteen) => c.is_verified === true && c.isBanned === false 
+        );
+        setCanteens(visibleCanteens);
+        setFilteredCanteens(visibleCanteens);
       } catch (error) {
         console.error('❌ Error fetching canteens:', error);
       } finally {

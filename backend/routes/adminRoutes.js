@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getTotalCounts, getMonthlyUserCount, getUserCountByRole, getTopUsersBySpending, getUsersByRoleList, getMonthlyOrders, getOrdersByCampusCanteen, getOrderStatusBreakdown, getTopCanteensByOrderVolume, getAverageOrderValue, getPeakOrderTimes, getTotalRevenue, getRevenueByPaymentMethod, getDailyRevenue, getWeeklyRevenue, getMonthlyRevenue, banUser, suspendCanteen, adminRateVendor, getRevenueByCampusAndCanteen, getTopCampusesByRevenue, getTopCanteensByRevenue, getAllUsers, approveVendor, blockVendor } = require('../controllers/adminController');
+const { getTotalCounts, getMonthlyUserCount, getUserCountByRole, getTopUsersBySpending, getUsersByRoleList, getMonthlyOrders, getOrdersByCampusCanteen, getOrderStatusBreakdown, getTopCanteensByOrderVolume, getAverageOrderValue, getPeakOrderTimes, getTotalRevenue, getRevenueByPaymentMethod, getDailyRevenue, getWeeklyRevenue, getMonthlyRevenue, banUser, suspendCanteen, adminRateVendor, getRevenueByCampusAndCanteen, getTopCampusesByRevenue, getTopCanteensByRevenue, getAllUsers, banCanteen, approveCanteen } = require('../controllers/adminController');
 
 router.get('/totals', getTotalCounts);
 router.get('/users/monthly', getMonthlyUserCount);
@@ -8,8 +8,6 @@ router.get('/users/count-by-role', getUserCountByRole);
 router.get('/users/top-spenders', getTopUsersBySpending);
 router.get('/users/list-by-role', getUsersByRoleList);
 router.get('/users/all', getAllUsers);
-router.post('/users/approve', approveVendor);
-router.post('/users/block', blockVendor);
 router.get('/orders/monthly', getMonthlyOrders);
 router.get('/orders/by-campus-canteen', getOrdersByCampusCanteen);
 router.get('/orders/status-wise', getOrderStatusBreakdown);
@@ -25,7 +23,8 @@ router.get('/revenue/daily', getDailyRevenue);
 router.get('/revenue/weekly', getWeeklyRevenue);
 router.get('/revenue/monthly', getMonthlyRevenue);
 router.post('/banUser', banUser);
-router.post('/suspendCanteen', suspendCanteen);
+router.post('/banCanteen', banCanteen);
+router.post('/approveCanteen', approveCanteen);
 router.post('/rateVendors', adminRateVendor);
 
 module.exports = router;

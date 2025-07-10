@@ -23,6 +23,8 @@ export interface Canteen {
   distance: string;
   image: string;
   isOpen: boolean;
+  is_verified?: boolean;
+  isBanned?: boolean;
   discount?: string;
   featured?: boolean;
   imageUrl?: string;

@@ -10,6 +10,8 @@ export interface User {
   campus: string;
   canteenId?: string;
   isVerified?: boolean;
+  isBanned?: boolean;
+  is_verified?: boolean;
   createdAt: string;
   updatedAt: string;
 }

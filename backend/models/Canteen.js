@@ -8,6 +8,8 @@ const CanteenSchema = new mongoose.Schema({
   items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
   images: [{ type: String }],
   isDeleted: { type: Boolean, default: false },
+  is_verified: { type: Boolean, default: false },
+  isBanned: { type: Boolean, default: false },
   // Additional fields for frontend compatibility
   cuisine: { type: String, default: "Mixed" },
   rating: { type: Number, default: 4.5, min: 0, max: 5 },

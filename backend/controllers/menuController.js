@@ -5,6 +5,11 @@ exports.getMenuByCanteenId = async (req, res) => {
     try {
         const { canteenId } = req.params;
 
+        // const canteen = await require('../models/Canteen').findById(canteenId);
+        // if (!canteen || canteen.isBanned || !canteen.is_verified) {
+        //     return res.status(403).json({ message: 'Canteen is not available.' });
+        // }
+
         // Find menu items associated with the canteen
         const menuItems = await Menu.find({ canteen: canteenId })
             .populate("canteen", "name")

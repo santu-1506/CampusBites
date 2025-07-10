@@ -95,6 +95,9 @@ exports.getOrderById = async (req, res) => {
 // @access  Private
 exports.createOrder = async (req, res) => {
     try {
+        if (req.user.isBanned) {
+            return res.status(403).json({ message: 'You are banned by admin.' });
+        }
         const { canteen, items, total, payment } = req.body;
         
         if (!items || items.length === 0) {

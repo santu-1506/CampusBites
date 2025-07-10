@@ -14,6 +14,7 @@ import { useAuth } from "@/context/auth-context"
 import { ArrowLeft, CreditCard, Smartphone, Truck, Loader2, Shield, CheckCircle } from "lucide-react"
 import Image from "next/image"
 import { createOrder } from "@/services/orderService"
+import { User } from "@/types";
 
 interface PaymentData {
   method: "cod" | "upi" | "card"
@@ -35,7 +36,8 @@ export default function PaymentPage() {
   const searchParams = useSearchParams()
   const { cart, clearCart, totalPrice } = useCart()
   const { toast } = useToast()
-  const { isAuthenticated, token } = useAuth()
+  const { isAuthenticated, token, user } = useAuth();
+  const [latestUser, setLatestUser] = useState<User | null>(null);
 
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("cod")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -60,10 +62,25 @@ export default function PaymentPage() {
       return
     }
 
+    // Fetch latest user info
+    const fetchUser = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch("http://localhost:8080/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLatestUser(data.user || null);
+        }
+      } catch (e) { /* ignore */ }
+    };
+    fetchUser();
+
     // Get order total from URL params or calculate from cart
     const total = searchParams.get('total')
     setOrderTotal(total ? parseFloat(total) : totalPrice + 25)
-  }, [searchParams, totalPrice])
+  }, [searchParams, totalPrice, isAuthenticated, token])
 
   const handlePayment = async () => {
     setIsProcessing(true)
@@ -434,10 +451,15 @@ export default function PaymentPage() {
             )}
 
             {/* Payment Button */}
+            {latestUser?.isBanned && (
+              <div className="w-full mt-4 p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 font-semibold text-center">
+                You are banned by admin and cannot place orders.
+              </div>
+            )}
             <Button
               onClick={handlePayment}
-              disabled={isProcessing}
-              className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-3 text-base"
+              disabled={isProcessing || latestUser?.isBanned}
+              className={`w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-3 text-base ${latestUser?.isBanned ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isProcessing ? (
                 <>

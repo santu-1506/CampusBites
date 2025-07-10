@@ -98,8 +98,8 @@ exports.getTopUsersBySpending = async (req, res) => {
 exports.getUsersByRoleList = async (req, res) => {
   try {
     const [students, owners] = await Promise.all([
-      User.find({ role: "student" }).select("name email"),
-      User.find({ role: "canteen" }).select("name email")
+      User.find({ role: "student" }).select("name email isBanned campus"),
+      User.find({ role: "canteen" }).select("name email isBanned is_verified canteenId"),
     ]);
     res.json({ students, canteenOwners: owners });
   } catch (error) {
@@ -524,11 +524,11 @@ exports.getMonthlyRevenue = async (req, res) => {
 
 exports.banUser = async (req, res) => {
   try {
-    const { userId } = req.body;
-    await User.findByIdAndUpdate(userId, { isBanned: true });
-    res.json({ message: "User has been banned." });
+    const { userId, ban } = req.body; // ban: true to ban, false to unban
+    await User.findByIdAndUpdate(userId, { isBanned: ban });
+    res.json({ message: ban ? "User has been banned." : "User has been unbanned." });
   } catch (error) {
-    console.error("Error banning user:", error);
+    console.error("Error banning/unbanning user:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -561,6 +561,50 @@ exports.adminRateVendor = async (req, res) => {
     res.json({ message: "Admin rating submitted." });
   } catch (error) {
     console.error("Error rating vendor:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get all users (for admin dashboard)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('name email isBanned is_verified role campus canteenId');
+    res.json(users);
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Approve vendor (canteen owner)
+exports.approveVendor = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findByIdAndUpdate(userId, { is_verified: true }, { new: true });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.canteenId) {
+      await Canteen.findByIdAndUpdate(user.canteenId, { is_verified: true });
+    }
+    res.json({ message: "Vendor approved", user });
+  } catch (error) {
+    console.error("Error approving vendor:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Block or unblock vendor (canteen owner)
+exports.blockVendor = async (req, res) => {
+  try {
+    const { userId, block } = req.body; // block: true to block, false to unblock
+    const user = await User.findByIdAndUpdate(userId, { isBanned: block }, { new: true });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    // Also update the canteen's isBanned if user has canteenId
+    if (user.canteenId) {
+      await Canteen.findByIdAndUpdate(user.canteenId, { isBanned: block });
+    }
+    res.json({ message: block ? "Vendor blocked" : "Vendor unblocked", user });
+  } catch (error) {
+    console.error("Error blocking/unblocking vendor:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

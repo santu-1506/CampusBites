@@ -135,6 +135,8 @@ export default function CampusDashboard() {
     return () => clearInterval(interval);
   }, [activeTab]);
 
+  console.log(user)
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -150,7 +152,7 @@ export default function CampusDashboard() {
       }
 
       // Use the specific canteen ID provided
-      const canteenId = '686c8e9fa3b10cc1f103760a';
+      const canteenId = user._id;
       console.log('Using canteen ID:', canteenId);
 
       const token = localStorage.getItem('token') || '';
@@ -220,16 +222,12 @@ export default function CampusDashboard() {
         return;
       }
 
-      // Use the specific canteen ID
-      const canteenId = '686c8e9fa3b10cc1f103760a';
-      console.log('Using canteen ID:', canteenId);
-
       const itemData = {
         name: formData.name,
         price: parseFloat(formData.price),
         description: formData.description,
         category: formData.category,
-        canteen: canteenId,
+        canteen: user._id,
         isVeg: formData.isVeg,
         image: imagePreview || formData.image,
       };

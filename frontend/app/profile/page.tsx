@@ -88,14 +88,14 @@ export default function ProfilePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4 shadow-2xl border-0 bg-white/90 backdrop-blur-xl">
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center transition-colors duration-500">
+        <Card className="w-full max-w-md mx-4 shadow-2xl border-0 bg-white/90 dark:bg-white/90 backdrop-blur-xl">
           <CardContent className="pt-12 pb-8 px-8 text-center">
             <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
               <User className="w-10 h-10 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold mb-4 text-gray-800">Please Sign In</CardTitle>
-            <CardDescription className="text-gray-600 mb-8 text-lg">
+            <CardTitle className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-900">Please Sign In</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-700 mb-8 text-lg">
               You need to be logged in to view your profile.
             </CardDescription>
             <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg">
@@ -108,40 +108,74 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 relative overflow-hidden transition-colors duration-500">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
+        {/* Light mode background */}
+        <div className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-300/20 to-purple-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-300/20 to-pink-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+        </div>
+
+        {/* Dark mode background */}
+        <div className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+        </div>
       </div>
 
       {/* Header */}
-      <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
+      <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -149,7 +183,7 @@ export default function ProfilePage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button asChild variant="ghost" className="text-white hover:bg-white/10 rounded-xl">
+                <Button asChild variant="ghost" className="text-gray-900 dark:text-white hover:bg-gray-100/50 dark:hover:bg-white/10 rounded-xl">
                   <Link href="/orders">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     Back
@@ -157,8 +191,8 @@ export default function ProfilePage() {
                 </Button>
               </motion.div>
               <div>
-                <h1 className="text-4xl font-bold text-white">My Profile</h1>
-                <p className="text-blue-200 mt-1">Manage your account information</p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+                <p className="text-gray-600 dark:text-blue-200 mt-1">Manage your account information</p>
               </div>
             </div>
             <motion.div
@@ -223,10 +257,10 @@ export default function ProfilePage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="bg-white/10 backdrop-blur-xl border-white/20 text-white">
+            <Card className="bg-white/90 dark:bg-white/10 backdrop-blur-xl border-gray-200/50 dark:border-white/20 text-gray-900 dark:text-white shadow-lg">
               <CardHeader className="text-center pb-6">
                 <div className="relative mx-auto mb-4">
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-700 border-4 border-white/20 shadow-2xl">
+                  <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-4 border-gray-300/50 dark:border-white/20 shadow-2xl">
                     <Image
                       src={profileImage}
                       alt="Profile"
@@ -250,22 +284,22 @@ export default function ProfilePage() {
                     className="hidden"
                   />
                 </div>
-                <CardTitle className="text-2xl font-bold text-white">{profileData.name}</CardTitle>
-                <CardDescription className="text-blue-200">{profileData.email}</CardDescription>
-                <Badge className="mt-3 bg-green-500/20 text-green-300 border-green-500/30 hover:bg-green-500/30">
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">{profileData.name}</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-blue-200">{profileData.email}</CardDescription>
+                <Badge className="mt-3 bg-green-500/20 text-green-600 dark:text-green-300 border-green-500/30 hover:bg-green-500/30">
                   Active Member
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 text-blue-200">
+                <div className="flex items-center gap-3 text-gray-600 dark:text-blue-200">
                   <Calendar className="w-4 h-4" />
                   <span className="text-sm">Member since January 2024</span>
                 </div>
-                <div className="flex items-center gap-3 text-blue-200">
+                <div className="flex items-center gap-3 text-gray-600 dark:text-blue-200">
                   <CreditCard className="w-4 h-4" />
                   <span className="text-sm">12 orders completed</span>
                 </div>
-                <div className="flex items-center gap-3 text-blue-200">
+                <div className="flex items-center gap-3 text-gray-600 dark:text-blue-200">
                   <Shield className="w-4 h-4" />
                   <span className="text-sm">Verified Account</span>
                 </div>
@@ -280,119 +314,119 @@ export default function ProfilePage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="bg-white/10 backdrop-blur-xl border-white/20 text-white">
+            <Card className="bg-white/90 dark:bg-white/10 backdrop-blur-xl border-gray-200/50 dark:border-white/20 text-gray-900 dark:text-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-3">
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                   <User className="w-6 h-6" />
                   Personal Information
                 </CardTitle>
-                <CardDescription className="text-blue-200">
+                <CardDescription className="text-gray-600 dark:text-blue-200">
                   {isEditing ? "Edit your personal details below" : "Your account information"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-blue-200 font-medium">Full Name</Label>
+                    <Label htmlFor="name" className="text-gray-600 dark:text-blue-200 font-medium">Full Name</Label>
                     {isEditing ? (
                       <Input
                         id="name"
                         value={profileData.name}
                         onChange={(e) => handleInputChange('name', e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500"
+                        className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500"
                         placeholder="Enter your full name"
                       />
                     ) : (
-                      <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                        <span className="text-white">{profileData.name || "Not provided"}</span>
+                      <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+                        <span className="text-gray-900 dark:text-white">{profileData.name || "Not provided"}</span>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-blue-200 font-medium">Email Address</Label>
+                    <Label htmlFor="email" className="text-gray-600 dark:text-blue-200 font-medium">Email Address</Label>
                     {isEditing ? (
                       <Input
                         id="email"
                         type="email"
                         value={profileData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500"
+                        className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500"
                         placeholder="Enter your email"
                       />
                     ) : (
-                      <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                        <span className="text-white">{profileData.email || "Not provided"}</span>
+                      <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+                        <span className="text-gray-900 dark:text-white">{profileData.email || "Not provided"}</span>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-blue-200 font-medium">Phone Number</Label>
+                    <Label htmlFor="phone" className="text-gray-600 dark:text-blue-200 font-medium">Phone Number</Label>
                     {isEditing ? (
                       <Input
                         id="phone"
                         type="tel"
                         value={profileData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500"
+                        className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500"
                         placeholder="Enter your phone number"
                       />
                     ) : (
-                      <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                        <span className="text-white">{profileData.phone || "Not provided"}</span>
+                      <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+                        <span className="text-gray-900 dark:text-white">{profileData.phone || "Not provided"}</span>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="dateOfBirth" className="text-blue-200 font-medium">Date of Birth</Label>
+                    <Label htmlFor="dateOfBirth" className="text-gray-600 dark:text-blue-200 font-medium">Date of Birth</Label>
                     {isEditing ? (
                       <Input
                         id="dateOfBirth"
                         type="date"
                         value={profileData.dateOfBirth}
                         onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500"
+                        className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500"
                       />
                     ) : (
-                      <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                        <span className="text-white">{profileData.dateOfBirth || "Not provided"}</span>
+                      <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+                        <span className="text-gray-900 dark:text-white">{profileData.dateOfBirth || "Not provided"}</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="text-blue-200 font-medium">Address</Label>
+                  <Label htmlFor="address" className="text-gray-600 dark:text-blue-200 font-medium">Address</Label>
                   {isEditing ? (
                     <Input
                       id="address"
                       value={profileData.address}
                       onChange={(e) => handleInputChange('address', e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500"
+                      className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500"
                       placeholder="Enter your address"
                     />
                   ) : (
-                    <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                      <span className="text-white">{profileData.address || "Not provided"}</span>
+                    <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10">
+                      <span className="text-gray-900 dark:text-white">{profileData.address || "Not provided"}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-blue-200 font-medium">Bio</Label>
+                  <Label htmlFor="bio" className="text-gray-600 dark:text-blue-200 font-medium">Bio</Label>
                   {isEditing ? (
                     <Textarea
                       id="bio"
                       value={profileData.bio}
                       onChange={(e) => handleInputChange('bio', e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-blue-200/50 focus:border-orange-500 min-h-[100px]"
+                      className="bg-white/70 dark:bg-white/10 border-gray-300/50 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-blue-200/50 focus:border-orange-500 min-h-[100px]"
                       placeholder="Tell us about yourself..."
                     />
                   ) : (
-                    <div className="p-3 bg-white/5 rounded-lg border border-white/10 min-h-[100px]">
-                      <span className="text-white">{profileData.bio || "No bio provided"}</span>
+                    <div className="p-3 bg-gray-100/50 dark:bg-white/5 rounded-lg border border-gray-200/50 dark:border-white/10 min-h-[100px]">
+                      <span className="text-gray-900 dark:text-white">{profileData.bio || "No bio provided"}</span>
                     </div>
                   )}
                 </div>
@@ -435,13 +469,13 @@ export default function ProfilePage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-8"
         >
-          <Card className="bg-white/10 backdrop-blur-xl border-white/20 text-white">
+          <Card className="bg-white/90 dark:bg-white/10 backdrop-blur-xl border-gray-200/50 dark:border-white/20 text-gray-900 dark:text-white shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-white flex items-center gap-3">
+              <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                 <Settings className="w-6 h-6" />
                 Account Settings
               </CardTitle>
-              <CardDescription className="text-blue-200">
+              <CardDescription className="text-gray-600 dark:text-blue-200">
                 Manage your account preferences and security
               </CardDescription>
             </CardHeader>
@@ -449,29 +483,29 @@ export default function ProfilePage() {
               <div className="grid md:grid-cols-3 gap-6">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                  className="p-6 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/10 hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all duration-300 cursor-pointer"
                 >
                   <Bell className="w-8 h-8 text-orange-400 mb-3" />
-                  <h3 className="font-semibold text-white mb-2">Notifications</h3>
-                  <p className="text-blue-200 text-sm">Manage your notification preferences</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Notifications</h3>
+                  <p className="text-gray-600 dark:text-blue-200 text-sm">Manage your notification preferences</p>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                  className="p-6 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/10 hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all duration-300 cursor-pointer"
                 >
                   <Shield className="w-8 h-8 text-green-400 mb-3" />
-                  <h3 className="font-semibold text-white mb-2">Security</h3>
-                  <p className="text-blue-200 text-sm">Change password and security settings</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Security</h3>
+                  <p className="text-gray-600 dark:text-blue-200 text-sm">Change password and security settings</p>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+                  className="p-6 bg-gray-100/50 dark:bg-white/5 rounded-xl border border-gray-200/50 dark:border-white/10 hover:bg-gray-200/50 dark:hover:bg-white/10 transition-all duration-300 cursor-pointer"
                 >
                   <CreditCard className="w-8 h-8 text-blue-400 mb-3" />
-                  <h3 className="font-semibold text-white mb-2">Payment</h3>
-                  <p className="text-blue-200 text-sm">Manage payment methods and billing</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Payment</h3>
+                  <p className="text-gray-600 dark:text-blue-200 text-sm">Manage payment methods and billing</p>
                 </motion.div>
               </div>
             </CardContent>

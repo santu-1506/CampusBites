@@ -83,7 +83,7 @@ const sampleCanteens = [
 async function seedCanteens() {
   try {
     // Connect to database
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.DB_URI);
     console.log("Connected to MongoDB");
 
     // Clear existing canteens
@@ -108,7 +108,8 @@ async function seedCanteens() {
         name: "Campus Admin",
         email: "admin@campusbites.com",
         password: "password123", // This should be hashed in production
-        role: "campus_owner"
+        role: "canteen",
+        campus: campus._id
       });
       console.log("Created default owner");
     }

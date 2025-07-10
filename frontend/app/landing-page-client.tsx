@@ -87,7 +87,7 @@ export default function LandingPageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] text-white overflow-hidden" suppressHydrationWarning>
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-[#0a192f] dark:via-[#1e3a5f] dark:to-[#0f172a] text-gray-900 dark:text-white overflow-hidden transition-all duration-500" suppressHydrationWarning>
       {/* Professional Hero Section */}
       <motion.section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -101,10 +101,16 @@ export default function LandingPageClient() {
       >
         {/* Subtle Animated Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0a192f]/50 via-[#1e3a5f]/30 to-[#0f172a]/50"></div>
-          <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-white/5 rounded-full blur-2xl animate-pulse"></div>
+          {/* Light mode background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-blue-50/50 to-purple-50/30 dark:opacity-0 opacity-100 transition-opacity duration-500"></div>
+          {/* Dark mode background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a192f]/50 via-[#1e3a5f]/30 to-[#0f172a]/50 opacity-0 dark:opacity-100 transition-opacity duration-500"></div>
+          
+          {/* Light mode floating elements */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/5 dark:bg-red-500/10 rounded-full blur-3xl animate-pulse transition-colors duration-500"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/5 dark:bg-red-500/10 rounded-full blur-3xl animate-pulse transition-colors duration-500"></div>
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/5 dark:bg-white/5 rounded-full blur-2xl animate-pulse transition-colors duration-500"></div>
+          
           {/* Floating burger moved farther right so it doesn't collide with hero copy */}
           <motion.div
             className="absolute top-16 right-[26%] text-5xl opacity-80 hidden xl:block"
@@ -133,25 +139,25 @@ export default function LandingPageClient() {
                 variants={itemVariants}
               >
                 <Star className="w-5 h-5 text-red-400" />
-                <span className="text-red-300 font-medium">#1 Campus Food Delivery</span>
+                <span className="text-red-400 dark:text-red-300 font-medium">#1 Campus Food Delivery</span>
               </motion.div>
 
               <motion.h1 
                 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
                 variants={itemVariants}
               >
-                <span className="block text-white">Ready to End</span>
+                <span className="block text-gray-900 dark:text-white">Ready to End</span>
                 <span className="block bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent">
                   Hunger Games?
                 </span>
               </motion.h1>
 
               <motion.p 
-                className="text-lg md:text-xl text-gray-400 mb-10 max-w-xl mx-auto lg:mx-0"
+                className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-xl mx-auto lg:mx-0"
                 variants={itemVariants}
               >
                 Don't let hunger slow you down. Get your favorite meals delivered fast,
-                <span className="text-red-400 font-semibold"> 24/7</span>, right to your hostel room.
+                <span className="text-red-500 dark:text-red-400 font-semibold"> 24/7</span>, right to your hostel room.
               </motion.p>
 
               <motion.div 
@@ -174,7 +180,7 @@ export default function LandingPageClient() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="border-2 border-red-700 text-red-700 hover:bg-gray-800 hover:text-white backdrop-blur-sm font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300"
+                    className="border-2 border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-white backdrop-blur-sm font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300"
                   >
                     <Link href="#demo">
                       <span className="mr-2 play-icon">▶</span>
@@ -196,10 +202,10 @@ export default function LandingPageClient() {
                   <div className="bg-red-500/20 p-4 rounded-full mb-2">
                     <Utensils className="w-6 h-6 text-red-400" />
                   </div>
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                     <Counter to={100} isPlus />
                   </span>
-                  <p className="text-gray-400 text-sm uppercase tracking-wide mt-1">Restaurants</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm uppercase tracking-wide mt-1">Restaurants</p>
                 </motion.div>
 
                 {/* Happy Customers */}
@@ -207,10 +213,10 @@ export default function LandingPageClient() {
                   <div className="bg-red-500/20 p-4 rounded-full mb-2">
                     <Users className="w-6 h-6 text-red-400" />
                   </div>
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                     <Counter to={1} suffix="k+" />
                   </span>
-                  <p className="text-gray-400 text-sm uppercase tracking-wide mt-1">Customers</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm uppercase tracking-wide mt-1">Customers</p>
                 </motion.div>
 
                 {/* Orders Delivered */}
@@ -218,10 +224,10 @@ export default function LandingPageClient() {
                   <div className="bg-red-500/20 p-4 rounded-full mb-2">
                     <Truck className="w-6 h-6 text-red-400" />
                   </div>
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                     <Counter to={5} suffix="k+" />
                   </span>
-                  <p className="text-gray-400 text-sm uppercase tracking-wide mt-1">Orders Delivered</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm uppercase tracking-wide mt-1">Orders Delivered</p>
                 </motion.div>
 
                 {/* Satisfaction */}
@@ -229,10 +235,10 @@ export default function LandingPageClient() {
                   <div className="bg-red-500/20 p-4 rounded-full mb-2">
                     <Smile className="w-6 h-6 text-red-400" />
                   </div>
-                  <span className="text-4xl font-extrabold text-white">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                     <Counter to={98} suffix="%" />
                   </span>
-                  <p className="text-gray-400 text-sm uppercase tracking-wide mt-1">Satisfaction</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm uppercase tracking-wide mt-1">Satisfaction</p>
                 </motion.div>
               </motion.div>
             </div>
@@ -478,7 +484,7 @@ export default function LandingPageClient() {
 
       {/* Features Section */}
       <motion.section
-        className="py-24 bg-gray-900/50"
+        className="py-24 bg-gray-100/50 dark:bg-gray-900/50 transition-colors duration-500"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
@@ -486,10 +492,10 @@ export default function LandingPageClient() {
       >
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-12" variants={itemVariants}>
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
               Why <span className="text-red-500">CampusBites</span>?
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               We're not just another food app. We're built by students, for students, with features that matter to you.
             </p>
           </motion.div>
@@ -522,15 +528,15 @@ export default function LandingPageClient() {
             ].map((feature, i) => (
               <motion.div
                 key={i}
-                className="bg-gray-800/40 p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 hover:bg-gray-800/60 transition-all duration-300"
+                className="bg-white/60 dark:bg-gray-800/40 p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:border-red-500/50 hover:bg-white/80 dark:hover:bg-gray-800/60 transition-all duration-300 shadow-lg dark:shadow-none"
                 variants={itemVariants}
                 whileHover={{ y: -5, scale: 1.02 }}
               >
                 <div className="flex items-center justify-center bg-red-500/10 rounded-full w-20 h-20 mb-6">
                   {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
+                <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -539,29 +545,29 @@ export default function LandingPageClient() {
 
        {/* How It Works Section */}
        <motion.section
-        className="py-24"
+        className="py-24 transition-colors duration-500"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
         variants={sectionVariants}
        >
         <div className="container mx-auto px-4">
-          <motion.h2 className="text-4xl font-bold text-center mb-16" variants={itemVariants}>
+          <motion.h2 className="text-4xl font-bold text-center mb-16 text-gray-900 dark:text-white" variants={itemVariants}>
             Get Started in <span className="text-red-500">3 Easy Steps</span>
           </motion.h2>
           <div className="relative">
-            <div className="absolute left-1/2 top-0 h-full w-0.5 bg-gray-700 hidden md:block" />
+            <div className="absolute left-1/2 top-0 h-full w-0.5 bg-gray-300 dark:bg-gray-700 hidden md:block transition-colors duration-500" />
             
             {/* Step 1 */}
             <motion.div className="md:grid md:grid-cols-2 md:gap-12 items-center mb-16" variants={itemVariants}>
               <div className="text-center md:text-left mb-8 md:mb-0">
-                <h3 className="text-3xl font-bold mb-3 text-red-400">1. Browse & Select</h3>
-                <p className="text-gray-400">Explore menus from all campus canteens in one place. Find your favorite dish or try something new!</p>
+                <h3 className="text-3xl font-bold mb-3 text-red-500">1. Browse & Select</h3>
+                <p className="text-gray-600 dark:text-gray-400">Explore menus from all campus canteens in one place. Find your favorite dish or try something new!</p>
               </div>
               <div className="relative flex justify-center items-center">
-                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-black hidden md:block" />
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full">
-                  <p>Browse Screen Mockup</p>
+                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-white dark:border-black hidden md:block transition-colors duration-500" />
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-500">
+                  <p className="text-gray-600 dark:text-gray-300">Browse Screen Mockup</p>
                 </div>
               </div>
             </motion.div>
@@ -569,27 +575,27 @@ export default function LandingPageClient() {
             {/* Step 2 */}
             <motion.div className="md:grid md:grid-cols-2 md:gap-12 items-center mb-16" variants={itemVariants}>
               <div className="relative flex justify-center items-center md:order-2">
-                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-black hidden md:block" />
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full">
-                   <p>Cart/Checkout Mockup</p>
+                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-white dark:border-black hidden md:block transition-colors duration-500" />
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-500">
+                   <p className="text-gray-600 dark:text-gray-300">Cart/Checkout Mockup</p>
                 </div>
               </div>
               <div className="text-center md:text-right mt-8 md:mt-0 md:order-1">
-                <h3 className="text-3xl font-bold mb-3 text-red-400">2. Place Your Order</h3>
-                <p className="text-gray-400">Add items to your cart, choose your payment method, and confirm your order in a few taps.</p>
+                <h3 className="text-3xl font-bold mb-3 text-red-500">2. Place Your Order</h3>
+                <p className="text-gray-600 dark:text-gray-400">Add items to your cart, choose your payment method, and confirm your order in a few taps.</p>
               </div>
             </motion.div>
 
              {/* Step 3 */}
              <motion.div className="md:grid md:grid-cols-2 md:gap-12 items-center" variants={itemVariants}>
               <div className="text-center md:text-left mb-8 md:mb-0">
-                <h3 className="text-3xl font-bold mb-3 text-red-400">3. Track & Enjoy</h3>
-                <p className="text-gray-400">Follow your order in real-time and get notified when it's arriving. Hot and fresh, right at your door!</p>
+                <h3 className="text-3xl font-bold mb-3 text-red-500">3. Track & Enjoy</h3>
+                <p className="text-gray-600 dark:text-gray-400">Follow your order in real-time and get notified when it's arriving. Hot and fresh, right at your door!</p>
               </div>
               <div className="relative flex justify-center items-center">
-                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-black hidden md:block" />
-                <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full">
-                  <p>Tracking Screen Mockup</p>
+                <div className="absolute w-8 h-8 bg-red-500 rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 border-4 border-white dark:border-black hidden md:block transition-colors duration-500" />
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-500">
+                  <p className="text-gray-600 dark:text-gray-300">Tracking Screen Mockup</p>
                 </div>
               </div>
             </motion.div>

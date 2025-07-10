@@ -127,7 +127,7 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-[#0a192f] dark:via-[#1e3a5f] dark:to-[#0f172a] flex items-center justify-center transition-colors duration-500'>
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -142,7 +142,7 @@ export default function MenuPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className='text-white text-xl font-light'>
+            className='text-gray-900 dark:text-white text-xl font-light'>
             Discovering your favorite canteens...
           </motion.p>
         </motion.div>
@@ -151,26 +151,50 @@ export default function MenuPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-[#0a192f] via-[#1e3a5f] to-[#0f172a] relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-[#0a192f] dark:via-[#1e3a5f] dark:to-[#0f172a] relative overflow-hidden transition-colors duration-500'>
       {/* Animated Background Elements */}
       <div className='absolute inset-0 overflow-hidden'>
-        <motion.div
-          variants={floatingVariants}
-          animate='animate'
-          className='absolute top-20 left-20 w-32 h-32 bg-red-500/10 rounded-full blur-xl'
-        />
-        <motion.div
-          variants={floatingVariants}
-          animate='animate'
-          style={{ animationDelay: '2s' }}
-          className='absolute top-40 right-32 w-24 h-24 bg-red-500/15 rounded-full blur-xl'
-        />
-        <motion.div
-          variants={floatingVariants}
-          animate='animate'
-          style={{ animationDelay: '4s' }}
-          className='absolute bottom-32 left-16 w-40 h-40 bg-white/5 rounded-full blur-2xl'
-        />
+        {/* Light mode background */}
+        <div className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-500">
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            className='absolute top-20 left-20 w-32 h-32 bg-purple-300/10 rounded-full blur-xl'
+          />
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            style={{ animationDelay: '2s' }}
+            className='absolute top-40 right-32 w-24 h-24 bg-red-300/15 rounded-full blur-xl'
+          />
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            style={{ animationDelay: '4s' }}
+            className='absolute bottom-32 left-16 w-40 h-40 bg-blue-300/10 rounded-full blur-2xl'
+          />
+        </div>
+
+        {/* Dark mode background */}
+        <div className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-500">
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            className='absolute top-20 left-20 w-32 h-32 bg-red-500/10 rounded-full blur-xl'
+          />
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            style={{ animationDelay: '2s' }}
+            className='absolute top-40 right-32 w-24 h-24 bg-red-500/15 rounded-full blur-xl'
+          />
+          <motion.div
+            variants={floatingVariants}
+            animate='animate'
+            style={{ animationDelay: '4s' }}
+            className='absolute bottom-32 left-16 w-40 h-40 bg-white/5 rounded-full blur-2xl'
+          />
+        </div>
 
         {/* Subtle light rays */}
         <motion.div
@@ -194,7 +218,7 @@ export default function MenuPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.8 }}
               className='mb-8'>
-              <h1 className='text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-white via-red-200 to-rose-200 bg-clip-text text-transparent'>
+              <h1 className='text-6xl md:text-8xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-red-600 to-rose-600 dark:from-white dark:via-red-200 dark:to-rose-200 bg-clip-text text-transparent'>
                 Campus Canteens
               </h1>
               <motion.div
@@ -203,7 +227,7 @@ export default function MenuPage() {
                 transition={{ delay: 0.5, duration: 0.8 }}
                 className='w-24 h-1 bg-gradient-to-r from-red-500 to-rose-500 mx-auto mb-6'
               />
-              <p className='text-xl text-gray-300 max-w-2xl mx-auto font-light'>
+              <p className='text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-light'>
                 Discover delicious meals from your favorite campus canteens, delivered fresh and fast
               </p>
             </motion.div>
@@ -215,13 +239,13 @@ export default function MenuPage() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className='relative max-w-2xl mx-auto'>
               <div className='relative group'>
-                <Search className='absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6 group-hover:text-purple-400 transition-colors duration-300' />
+                <Search className='absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 w-6 h-6 group-hover:text-red-500 transition-colors duration-300' />
                 <Input
                   type='text'
                   placeholder='Search canteens, cuisines, or dishes...'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className='w-full pl-16 pr-6 py-6 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 hover:bg-white/15'
+                  className='w-full pl-16 pr-6 py-6 bg-white/80 dark:bg-white/10 backdrop-blur-xl border-gray-200/50 dark:border-white/20 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300 hover:bg-white/90 dark:hover:bg-white/15'
                 />
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -265,7 +289,7 @@ export default function MenuPage() {
                       onHoverStart={() => setHoveredCard(canteen._id)}
                       onHoverEnd={() => setHoveredCard(null)}
                       className='group relative'>
-                      <Card className='bg-white/10 backdrop-blur-xl border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-500 h-full'>
+                      <Card className='bg-white/90 dark:bg-white/10 backdrop-blur-xl border-gray-200/50 dark:border-white/20 overflow-hidden hover:bg-white/95 dark:hover:bg-white/15 transition-all duration-500 h-full shadow-lg'>
                         <div className='relative overflow-hidden'>
                           <motion.div
                             whileHover={{ scale: 1.1 }}
@@ -322,7 +346,7 @@ export default function MenuPage() {
                             <Button
                               size='sm'
                               variant='outline'
-                              className='border-white/30 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-full w-10 h-10 p-0'>
+                              className='border-gray-300/50 dark:border-white/30 bg-white/70 dark:bg-white/20 backdrop-blur-sm text-gray-900 dark:text-white hover:bg-white/80 dark:hover:bg-white/30 rounded-full w-10 h-10 p-0'>
                               <Heart className='w-4 h-4' />
                             </Button>
                           </motion.div>
@@ -348,10 +372,10 @@ export default function MenuPage() {
                         <CardHeader className='pb-4'>
                           <div className='flex items-start justify-between'>
                             <div className='flex-1'>
-                              <CardTitle className='text-2xl text-white mb-2 group-hover:text-red-200 transition-colors'>
+                              <CardTitle className='text-2xl text-gray-900 dark:text-white mb-2 group-hover:text-red-600 dark:group-hover:text-red-200 transition-colors'>
                                 {canteen.name}
                               </CardTitle>
-                              <CardDescription className='text-gray-300 flex items-center gap-2'>
+                              <CardDescription className='text-gray-600 dark:text-gray-300 flex items-center gap-2'>
                                 <ChefHat className='w-4 h-4' />
                                 {canteen.cuisine}
                               </CardDescription>
@@ -360,7 +384,7 @@ export default function MenuPage() {
                               whileHover={{ scale: 1.1 }}
                               className='flex items-center gap-1 bg-yellow-500/20 px-3 py-1 rounded-full'>
                               <Star className='w-4 h-4 text-yellow-400 fill-current' />
-                              <span className='text-white font-bold'>
+                              <span className='text-gray-900 dark:text-white font-bold'>
                                 {canteen.rating}
                               </span>
                             </motion.div>
@@ -368,7 +392,7 @@ export default function MenuPage() {
                         </CardHeader>
 
                         <CardContent className='pt-0'>
-                          <div className='flex items-center justify-between text-sm text-gray-300 mb-6'>
+                          <div className='flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 mb-6'>
                             <div className='flex items-center gap-2'>
                               <Clock className='w-4 h-4 text-red-400' />
                               <span>{canteen.deliveryTime}</span>
@@ -410,10 +434,10 @@ export default function MenuPage() {
                     className='w-32 h-32 bg-gradient-to-r from-red-500/20 to-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-8'>
                     <Search className='w-16 h-16 text-red-400' />
                   </motion.div>
-                  <h3 className='text-3xl font-bold text-white mb-4'>
+                  <h3 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>
                     No canteens found
                   </h3>
-                  <p className='text-gray-400 text-lg max-w-md mx-auto'>
+                  <p className='text-gray-600 dark:text-gray-400 text-lg max-w-md mx-auto'>
                     Try adjusting your search to discover amazing campus canteens
                   </p>
                 </motion.div>

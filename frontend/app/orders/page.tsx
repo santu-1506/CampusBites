@@ -97,20 +97,20 @@ export default function OrdersPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center relative overflow-hidden transition-colors duration-500">
         {/* Background decorations */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-orange-200/20 to-red-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-r from-orange-200/30 to-red-200/30 dark:from-orange-200/20 dark:to-red-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-purple-200/30 dark:from-blue-200/20 dark:to-purple-200/20 rounded-full blur-3xl"></div>
         </div>
         
-        <Card className="w-full max-w-md mx-4 shadow-2xl border-0 bg-white/80 backdrop-blur-xl relative z-10">
+        <Card className="w-full max-w-md mx-4 shadow-2xl border-0 bg-white/90 dark:bg-white/80 backdrop-blur-xl relative z-10">
           <CardContent className="pt-12 pb-8 px-8 text-center">
             <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
               <ShoppingBag className="w-10 h-10 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold mb-4 text-gray-800">Please Sign In</CardTitle>
-            <CardDescription className="text-gray-600 mb-8 text-lg">
+            <CardTitle className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-900">Please Sign In</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-700 mb-8 text-lg">
               You need to be logged in to view your order history and track your delicious meals.
             </CardDescription>
             <Button asChild className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
@@ -210,16 +210,16 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 transition-colors duration-500">
         {/* Modern Header */}
-        <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
+        <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
           <div className="container mx-auto px-6 py-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold text-white">
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                   My Orders
                 </h1>
-                <p className="text-blue-200 mt-1">Track your delicious journey</p>
+                <p className="text-gray-600 dark:text-blue-200 mt-1">Track your delicious journey</p>
               </div>
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function OrdersPage() {
               />
           </div>
             <motion.p 
-              className="text-blue-200 text-lg font-medium"
+              className="text-gray-600 dark:text-blue-200 text-lg font-medium"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ 
                 duration: 1.5,
@@ -279,28 +279,28 @@ export default function OrdersPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 transition-colors duration-500">
         {/* Modern Header */}
-        <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
+        <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
           <div className="container mx-auto px-6 py-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               My Orders
             </h1>
           </div>
         </div>
 
         <div className="container mx-auto px-6 py-12">
-          <Alert className="max-w-2xl mx-auto border-red-200 bg-red-50">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            <AlertTitle className="text-red-800 font-semibold">Oops! Something went wrong</AlertTitle>
-            <AlertDescription className="text-red-700 mb-4">{error}</AlertDescription>
+          <Alert className="max-w-2xl mx-auto border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20">
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <AlertTitle className="text-red-800 dark:text-red-300 font-semibold">Oops! Something went wrong</AlertTitle>
+            <AlertDescription className="text-red-700 dark:text-red-400 mb-4">{error}</AlertDescription>
             <div className="flex gap-3">
             {error.includes("Session expired") && (
                 <Button asChild className="bg-red-600 hover:bg-red-700">
                 <Link href="/login">Login Again</Link>
               </Button>
             )}
-              <Button onClick={fetchOrders} variant="outline" className="border-red-300 text-red-700 hover:bg-red-50">
+              <Button onClick={fetchOrders} variant="outline" className="border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Try Again
               </Button>
@@ -312,59 +312,93 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 relative overflow-hidden transition-colors duration-500">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"
-          animate={{
-            x: [-100, 100, -100],
-            y: [-50, 50, -50],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
+        {/* Light mode background */}
+        <div className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-300/20 to-purple-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-300/20 to-pink-300/20 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+        </div>
+
+        {/* Dark mode background */}
+        <div className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-500">
+          <motion.div
+            className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"
+            animate={{
+              x: [0, -80, 0],
+              y: [0, 60, 0],
+              scale: [1, 0.8, 1],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 rounded-full blur-2xl"
+            animate={{
+              x: [-100, 100, -100],
+              y: [-50, 50, -50],
+            }}
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
       </div>
 
       {/* Modern Header with Stats */}
-      <div className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
+      <div className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/20 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-white">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                 My Orders
               </h1>
-              <p className="text-gray-500 mt-1">Track your delicious journey</p>
+              <p className="text-gray-600 dark:text-blue-200 mt-1">Track your delicious journey</p>
             </div>
             <div className="flex items-center gap-6">
                               <motion.div 
@@ -373,10 +407,10 @@ export default function OrdersPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     <AnimatedCounter value={orders.length} />
                   </div>
-                  <div className="text-sm text-blue-200">Total Orders</div>
+                  <div className="text-sm text-gray-600 dark:text-blue-200">Total Orders</div>
                 </motion.div>
                 <motion.div 
                   className="text-center"
@@ -384,10 +418,10 @@ export default function OrdersPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-green-500 dark:text-green-400">
                     <AnimatedCounter value={orders.filter(o => o.status === 'completed').length} />
                   </div>
-                  <div className="text-sm text-blue-200">Completed</div>
+                  <div className="text-sm text-gray-600 dark:text-blue-200">Completed</div>
                 </motion.div>
             </div>
           </div>
@@ -420,7 +454,7 @@ export default function OrdersPage() {
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-200 to-purple-300 rounded-full blur-xl opacity-30"></div>
             </div>
             <motion.h3 
-              className="text-3xl font-bold text-white mb-4"
+              className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -428,7 +462,7 @@ export default function OrdersPage() {
               No orders yet
             </motion.h3>
             <motion.p 
-              className="text-blue-200 text-lg mb-8 max-w-md mx-auto"
+              className="text-gray-600 dark:text-blue-200 text-lg mb-8 max-w-md mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}

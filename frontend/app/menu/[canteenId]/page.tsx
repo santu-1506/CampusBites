@@ -94,28 +94,32 @@ const CanteenMenuPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:bg-gray-950 transition-colors duration-500 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-500"></div>
       </div>
     )
   }
 
   if (!canteen) {
-    return <div className="text-center py-10">Canteen not found.</div>
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:bg-gray-950 transition-colors duration-500 flex justify-center items-center">
+        <div className="text-center py-10 text-gray-900 dark:text-white">Canteen not found.</div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:bg-gray-950 transition-colors duration-500">
       <header className="relative h-64 md:h-80">
-        <Image src={canteen.image || "/placeholder.svg"} alt={canteen.name} layout="fill" objectFit="cover" className="opacity-50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-transparent" />
+        <Image src={canteen.image || "/placeholder.svg"} alt={canteen.name} layout="fill" objectFit="cover" className="opacity-70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
-            <Link href="/menu" className="flex items-center gap-2 text-white mb-4 hover:underline">
+            <Link href="/menu" className="flex items-center gap-2 text-white mb-4 hover:underline transition-colors">
                 <ArrowLeft size={16} /> Back to Restaurants
             </Link>
-          <h1 className="text-5xl font-bold text-white">{canteen.name}</h1>
-          <p className="text-lg text-gray-300">{canteen.cuisine}</p>
-          <div className="flex items-center gap-4 mt-2 text-gray-300">
+          <h1 className="text-5xl font-bold text-white drop-shadow-md">{canteen.name}</h1>
+          <p className="text-lg text-gray-200 drop-shadow-sm">{canteen.cuisine}</p>
+          <div className="flex items-center gap-4 mt-2 text-gray-200">
              <div className="flex items-center gap-1">
                 <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                 <span>{canteen.rating}</span>
@@ -197,7 +201,7 @@ const CanteenMenuPage = () => {
                 })}
                 </div>
             ) : (
-                <p className="text-center py-10">No menu items found.</p>
+                <p className="text-center py-10 text-gray-600 dark:text-gray-400">No menu items found.</p>
             )}
           </main>
         </div>

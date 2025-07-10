@@ -627,7 +627,7 @@ export default function OrdersPage() {
                               </Button>
                             </motion.div>
                           </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900">
                             {orderDetailLoading ? (
                               <>
                                 <DialogHeader>
@@ -639,7 +639,7 @@ export default function OrdersPage() {
                               </>
                             ) : selectedOrder ? (
                               <>
-                                <DialogHeader className="border-b pb-6">
+                                <DialogHeader className="border-b pb-6 dark:border-slate-700">
                                   <div className="flex items-center gap-4">
                                     <div className={`w-14 h-14 ${getStatusConfig(selectedOrder.status).color} rounded-xl flex items-center justify-center shadow-lg`}>
                                       {(() => {
@@ -648,10 +648,10 @@ export default function OrdersPage() {
                                       })()}
                                     </div>
                                     <div>
-                                      <DialogTitle className="text-2xl font-bold text-gray-800">
+                                      <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                         Order #{selectedOrder._id.slice(-8).toUpperCase()}
                                       </DialogTitle>
-                                      <p className="text-gray-600 mt-1">{formatDate(selectedOrder.createdAt)}</p>
+                                      <p className="text-gray-600 dark:text-gray-400 mt-1">{formatDate(selectedOrder.createdAt)}</p>
                                     </div>
                                   </div>
                                 </DialogHeader>
@@ -663,7 +663,7 @@ export default function OrdersPage() {
                                   <DialogTitle>Order Details</DialogTitle>
                                 </DialogHeader>
                                 <div className="flex items-center justify-center py-20">
-                                  <p className="text-gray-500">No order selected</p>
+                                  <p className="text-gray-500 dark:text-gray-400">No order selected</p>
                                 </div>
                               </>
                             )}
@@ -727,13 +727,13 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
     <div className="grid md:grid-cols-2 gap-8 py-6">
       {/* Order Timeline */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
           <Truck className="w-5 h-5" />
           Order Timeline
         </h3>
         <div className="space-y-6 relative">
           {/* Progress Line */}
-          <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200">
+          <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-200 dark:bg-slate-700">
             <motion.div
               className="bg-gradient-to-b from-green-500 to-blue-500 w-full origin-top"
               initial={{ scaleY: 0 }}
@@ -753,7 +753,7 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
                 transition={{ duration: 0.6, delay: index * 0.2 }}
               >
                 <motion.div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-white dark:border-slate-900 shadow-lg ${
                     step.completed 
                       ? step.status === 'cancelled' 
                         ? 'bg-red-500' 
@@ -765,11 +765,11 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
                   transition={{ duration: 0.5, delay: index * 0.2 + 0.3 }}
                   whileHover={{ scale: 1.1 }}
                 >
-                  <StepIcon className={`w-5 h-5 ${step.completed ? 'text-white' : 'text-gray-400'}`} />
+                  <StepIcon className={`w-5 h-5 ${step.completed ? 'text-white' : 'text-gray-400 dark:text-slate-500'}`} />
                 </motion.div>
                 <div className="flex-1">
                   <motion.div 
-                    className={`font-medium ${step.completed ? 'text-gray-800' : 'text-gray-400'}`}
+                    className={`font-medium ${step.completed ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-slate-500'}`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.2 + 0.5 }}
@@ -796,18 +796,18 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
       {/* Restaurant & Payment Info */}
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
             <MapPin className="w-5 h-5" />
             Restaurant Details
           </h3>
-          <Card className="p-4 bg-gray-50 border-gray-200">
+          <Card className="p-4 bg-gray-50 border-gray-200 dark:bg-slate-800 dark:border-slate-700">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
                 <ChefHat className="w-6 h-6 text-white" />
                  </div>
               <div>
-                <h4 className="font-semibold text-gray-800">{order.canteen?.name || 'Unknown Restaurant'}</h4>
-                <p className="text-sm text-gray-600">Campus Restaurant</p>
+                <h4 className="font-semibold text-gray-800 dark:text-gray-200">{order.canteen?.name || 'Unknown Restaurant'}</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Campus Restaurant</p>
               </div>
             </div>
           </Card>
@@ -815,30 +815,30 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
 
         {order.payment && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
               Payment Information
             </h3>
-            <Card className="p-4 bg-gray-50 border-gray-200">
+            <Card className="p-4 bg-gray-50 border-gray-200 dark:bg-slate-800 dark:border-slate-700">
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Method:</span>
-                  <span className="font-medium capitalize">{order.payment.method}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Method:</span>
+                  <span className="font-medium capitalize dark:text-gray-200">{order.payment.method}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Status:</span>
                   <Badge className={`${
-                    order.payment.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    order.payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
+                    order.payment.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' :
+                    order.payment.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' :
+                    'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
                   } border-0`}>
                     {order.payment.status}
                   </Badge>
                 </div>
                 {order.payment.transactionId && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Transaction ID:</span>
-                    <span className="font-mono text-sm">{order.payment.transactionId}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                    <span className="font-mono text-sm dark:text-gray-300">{order.payment.transactionId}</span>
                   </div>
                 )}
               </div>
@@ -848,16 +848,16 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
           </div>
           
       {/* Order Items */}
-      <div className="md:col-span-2 border-t pt-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+      <div className="md:col-span-2 border-t pt-6 dark:border-slate-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-6 flex items-center gap-2">
           <ShoppingBag className="w-5 h-5" />
           Order Items ({order.items.length})
         </h3>
             <div className="space-y-4">
           {order.items.map((item) => (
-            <Card key={item._id} className="p-4 border-gray-200 hover:shadow-md transition-shadow">
+            <Card key={item._id} className="p-4 border-gray-200 dark:border-slate-700 dark:bg-slate-800/50 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4">
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-200 flex-shrink-0">
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-200 dark:bg-slate-700 flex-shrink-0">
                      <Image
                        src={item.item?.image || "/placeholder.svg"}
                     alt={item.item?.name || 'Item'}
@@ -866,20 +866,20 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
                      />
                    </div>
                    <div className="flex-1">
-                  <h4 className="font-semibold text-gray-800 text-lg">
+                  <h4 className="font-semibold text-gray-800 dark:text-gray-200 text-lg">
                        {item.item?.name || 'Item No Longer Available'}
                      </h4>
                   <div className="flex items-center gap-4 mt-2">
-                    <span className="text-gray-600">Quantity: {item.quantity}</span>
-                    <span className="text-gray-600">Price: ₹{item.item?.price || 0}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Quantity: {item.quantity || 'N/A'}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Price: ₹{item.item?.price || 0}</span>
                   </div>
                      {(!item.item || item.item.name === 'Item No Longer Available') && (
                     <p className="text-sm text-red-500 italic mt-1">This item may have been removed from the menu</p>
                      )}
                    </div>
                    <div className="text-right">
-                  <div className="text-xl font-bold text-gray-800">
-                    ₹{(item.quantity * (item.item?.price || 0)).toFixed(2)}
+                  <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                    ₹{((item.quantity || 0) * (item.item?.price || 0)).toFixed(2)}
             </div>
                 </div>
               </div>
@@ -888,10 +888,10 @@ function OrderDetailsContent({ order }: { order: Order | null }) {
             </div>
 
         {/* Order Total */}
-        <Card className="mt-6 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200">
+        <Card className="mt-6 p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 dark:bg-gradient-to-r dark:from-slate-800 dark:to-slate-700 dark:border-slate-700">
           <div className="flex justify-between items-center">
-            <div className="text-xl font-semibold text-gray-800">Total Amount</div>
-            <div className="text-3xl font-bold text-gray-800">₹{order.total.toFixed(2)}</div>
+            <div className="text-xl font-semibold text-gray-800 dark:text-gray-200">Total Amount</div>
+            <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">₹{order.total.toFixed(2)}</div>
           </div>
         </Card>
         </div>

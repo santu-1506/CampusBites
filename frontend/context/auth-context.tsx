@@ -1,26 +1,39 @@
-"use client"
+'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
-import { jwtDecode } from "jwt-decode";
-import { User } from "@/types"
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { User } from '@/types';
 
 type AuthContextType = {
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  token: string | null
-  login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
-  loginWithToken: (token: string) => void
-  logout: () => void
-}
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  token: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+    role: 'student' | 'canteen' | 'admin';
+    campus: string;
+  }) => Promise<void>;
+  loginWithToken: (token: string) => void;
+  logout: () => void;
+};
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
   const isTokenExpired = useCallback((token: string): boolean => {
     try {
@@ -33,26 +46,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token")
+    const storedToken = localStorage.getItem('token');
     if (storedToken) {
       try {
         if (isTokenExpired(storedToken)) {
-          console.log("Token has expired, removing from storage");
-          localStorage.removeItem("token");
+          console.log('Token has expired, removing from storage');
+          localStorage.removeItem('token');
           setIsLoading(false);
           return;
         }
-        
+
         const decoded = jwtDecode<User>(storedToken);
         setUser(decoded);
         setToken(storedToken);
       } catch (error) {
-        console.error("Invalid token:", error);
-        localStorage.removeItem("token");
+        console.error('Invalid token:', error);
+        localStorage.removeItem('token');
       }
     }
-    setIsLoading(false)
-  }, [isTokenExpired])
+    setIsLoading(false);
+  }, [isTokenExpired]);
 
   const login = useCallback(async (email: string, password: string) => {
     try {
@@ -74,7 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const decoded = jwtDecode<User>(data.token);
         setUser(decoded);
         setToken(data.token);
-        localStorage.setItem("token", data.token);
+        console.log({ data });
+        localStorage.setItem('userDetails', data.user1);
+        localStorage.setItem('token', data.token);
       } else {
         throw new Error('Invalid response from server');
       }
@@ -82,64 +97,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Login error:', error);
       throw error;
     }
-  }, [])
+  }, []);
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
-    try {
-      const response = await fetch('/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          name, 
-          email, 
-          password, 
-          role: 'student',
-          campus: 'Main Campus' // You might want to make this dynamic
-        }),
-      });
+  const register = useCallback(
+    async (data: {
+      name: string;
+      email: string;
+      password: string;
+      role: 'student' | 'canteen' | 'admin';
+      campus: string;
+    }) => {
+      try {
+        const response = await fetch('/api/users/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+          credentials: 'include', // Important for handling cookies
+        });
 
-      const data = await response.json();
+        const responseData = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Registration failed');
+        }
+
+        if (responseData.success && responseData.token) {
+          const decoded = jwtDecode<User>(responseData.token);
+          setUser(decoded);
+          setToken(responseData.token);
+          localStorage.setItem('token', responseData.token);
+        } else {
+          throw new Error('Invalid response from server');
+        }
+
+        return responseData;
+      } catch (error) {
+        console.error('Registration error:', error);
+        throw error;
       }
+    },
+    []
+  );
 
-      if (data.success && data.token) {
-        const decoded = jwtDecode<User>(data.token);
+  const loginWithToken = useCallback(
+    (token: string) => {
+      try {
+        if (isTokenExpired(token)) {
+          console.log('Cannot login with expired token');
+          return;
+        }
+
+        const decoded = jwtDecode<User>(token);
         setUser(decoded);
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-      } else {
-        throw new Error('Invalid response from server');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
-  }, [])
+        setToken(token);
 
-  const loginWithToken = useCallback((token: string) => {
-    try {
-      if (isTokenExpired(token)) {
-        console.log("Cannot login with expired token");
-        return;
+        localStorage.setItem('token', token);
+      } catch (error) {
+        console.error('Failed to decode token:', error);
       }
-      
-      const decoded = jwtDecode<User>(token);
-      setUser(decoded);
-      setToken(token);
-      localStorage.setItem("token", token);
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-    }
-  }, [isTokenExpired]);
+    },
+    [isTokenExpired]
+  );
 
   const logout = useCallback(() => {
-    setUser(null)
+    setUser(null);
     setToken(null);
-    localStorage.removeItem("token")
+    localStorage.removeItem('token');
   }, []);
 
   return (
@@ -153,17 +178,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         loginWithToken,
         logout,
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context
+  return context;
 }

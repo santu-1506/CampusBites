@@ -951,5 +951,7 @@ export default function AdminDashboard() {
         </motion.div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
+
+export default AdminDashboard;

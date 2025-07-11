@@ -20,7 +20,7 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid role." });
     }
 
-    const campusDoc = await Campus.findById(campus);
+    const campusDoc = await Campus.findOne(campus);
     if (!campusDoc) {
       return res.status(400).json({ message: "Campus not found." });
     }

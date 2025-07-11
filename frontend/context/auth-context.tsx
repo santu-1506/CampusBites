@@ -87,7 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const decoded = jwtDecode<User>(data.token);
         setUser(decoded);
         setToken(data.token);
-        localStorage.setItem("userDetails", data.user1);
+        console.log({ data });
+        localStorage.setItem('userDetails', data.user1);
         localStorage.setItem('token', data.token);
       } else {
         throw new Error('Invalid response from server');
@@ -151,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const decoded = jwtDecode<User>(token);
         setUser(decoded);
         setToken(token);
-        
+
         localStorage.setItem('token', token);
       } catch (error) {
         console.error('Failed to decode token:', error);

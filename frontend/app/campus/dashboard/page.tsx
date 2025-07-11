@@ -103,6 +103,7 @@ export default function CampusDashboard() {
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   console.log(user, 'userDetails');
+  const UserDetails: any = JSON.parse(localStorage.getItem('userDetails') || '{}');
 
   // Form state for new/edit item
   const [formData, setFormData] = useState({
@@ -135,14 +136,14 @@ export default function CampusDashboard() {
     return () => clearInterval(interval);
   }, [activeTab]);
 
-  console.log(user)
+  console.log(user);
 
   const fetchData = async () => {
     try {
       setLoading(true);
 
       // Get canteen ID from authenticated user
-      if (!isAuthenticated || !user || user.role !== 'canteen') {
+      if (!isAuthenticated || !UserDetails || user?.role !== 'canteen') {
         toast({
           title: 'Error',
           description: 'You must be logged in as a canteen user',
@@ -152,7 +153,7 @@ export default function CampusDashboard() {
       }
 
       // Use the specific canteen ID provided
-      const canteenId = user._id;
+      const canteenId = UserDetails.canteenId;
       console.log('Using canteen ID:', canteenId);
 
       const token = localStorage.getItem('token') || '';
@@ -207,12 +208,8 @@ export default function CampusDashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log('User details:', user);
-      console.log('Is authenticated:', isAuthenticated);
-      console.log('User role:', user?.role);
-
       // Temporarily allow any authenticated user for testing
-      if (!isAuthenticated || !user) {
+      if (!isAuthenticated || !UserDetails) {
         console.log('Authentication check failed');
         toast({
           title: 'Error',
@@ -227,7 +224,7 @@ export default function CampusDashboard() {
         price: parseFloat(formData.price),
         description: formData.description,
         category: formData.category,
-        canteen: user._id,
+        canteen: UserDetails.canteenId,
         isVeg: formData.isVeg,
         image: imagePreview || formData.image,
       };
